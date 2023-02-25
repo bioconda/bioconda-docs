@@ -31,10 +31,14 @@ jobs:
         eval "$(conda shell.bash hook)"
         conda activate ./env
 
-        # For testing, use BIOCONDA_FILTER_RECIPES=10 or some small-ish number
-        # Otherwise BIOCONDA_FILTER_RECIPES=".*" or other regex
-        # If unset, builds all recipes
-        export BIOCONDA_FILTER_RECIPES=10
+        # For testing, use BIOCONDA_FILTER_RECIPES=10 or some small-ish number,
+        # or BIOCONDA_FILTER_RECIPES=".*" or other regex. If these are set,
+        # you'll get warnings like "Problem in conda domain: field is supposed
+        # to use role 'depends', but that role is not in the domain', which is
+        # expected.
+        #
+        # If unset, pages will be built for all recipes.
+        # export BIOCONDA_FILTER_RECIPES=10
 
         make clean html SPHINXOPTS="-T -j1"
         touch build/html/.nojekyll
