@@ -30,7 +30,13 @@ jobs:
       run: |
         eval "$(conda shell.bash hook)"
         conda activate ./env
-        make clean html BIOCONDA_FILTER_RECIPES=5 SPHINXOPTS="-T -j1"
+
+        # For testing, use BIOCONDA_FILTER_RECIPES=10 or some small-ish number
+        # Otherwise BIOCONDA_FILTER_RECIPES=".*" or other regex
+        # If unset, builds all recipes
+        export BIOCONDA_FILTER_RECIPES=10
+
+        make clean html SPHINXOPTS="-T -j1"
         touch build/html/.nojekyll
         tar -czf docs.tar.gz build/html
 
@@ -57,7 +63,7 @@ jobs:
         mkdir -p ~/.ssh
         ssh-keyscan github.com >> ~/.ssh/known_hosts
         ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-        ssh-add - <<< "${{ secrets.SSH_DEPLOY_KEY }}"  
+        ssh-add - <<< "${{ secrets.SSH_DEPLOY_KEY }}"
 
     # Clone the bioconda.github.io repo, clean it out completely, then copy the
     # docs just built above into the repo and commit. Uses SSH as set up above.
