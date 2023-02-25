@@ -43,7 +43,7 @@ jobs:
     # Upload the built docs as an artifact for inspection (even on PRs). This
     # will show up in the Actions web interface.
     - name: push artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: doc
         path: docs.tar.gz
