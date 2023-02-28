@@ -38,7 +38,7 @@ jobs:
         # expected.
         #
         # If unset, pages will be built for all recipes.
-        export BIOCONDA_FILTER_RECIPES=10
+        # export BIOCONDA_FILTER_RECIPES=10
 
         make clean html SPHINXOPTS="-T -j1"
         touch build/html/.nojekyll
