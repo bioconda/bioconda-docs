@@ -23,6 +23,7 @@ Let's take a look at the what sorts of things are stored within this file for a
 single package:
 
    .. code-block:: json
+
     {
       "info": {
         "subdir": "noarch"
@@ -67,7 +68,7 @@ The bioconda-repodata-patches package
 -------------------------------------
 
 The `bioconda-repodata-patches` package itself contains a set of patches for
-each architecture:
+each architecture::
 
     .
     ├── linux-64
@@ -78,7 +79,7 @@ each architecture:
         └── patch_instructions.json
 
 For an individual package, the json file will contain the updated dependencies.
-For the `nanoqc` example above, that would look like:
+For the `nanoqc` example above, that would look like::
 
     "nanoqc-0.9.4-py_0.tar.bz2": {
       "depends": [
@@ -117,6 +118,7 @@ this, we can use the `timestamp`, so we only update packages that currently
 exist. The code for this might look like the following:
 
   .. code-block:: python
+
     # Nanoqc requires bokeh >=2.4,<3
     if record_name.startswith('nanoqc') and has_dep(record, "bokeh") and record.get('timestamp', 0) < 1592397000000:
         for i, dep in enumerate(deps):
@@ -137,7 +139,7 @@ Confirming the patch is correct
 
 Now that the patches have been made, it's good to check that they actually
 contain the right changes before proceeding. To do this, we can use the
-`show_diff.py` script. In the example above, this would produce:
+`show_diff.py` script. In the example above, this would produce::
 
     noarch::nanoqc-0.9.1-py_0.tar.bz2
     -    "bokeh",
