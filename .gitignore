@@ -1,2 +1,3 @@
 build/
 _bioconda_recipes/
+__pycache__
