@@ -61,3 +61,15 @@ Note that you can set `BIOCONDA_FILTER_RECIPES` to some other number; omitting
 it completely will build *all* recipes' README.html pages which can take
 a while.
 
+## Points of interest
+
+- Docs are built with Sphinx
+- the `source/_ext` directory has Sphinx extensions for building the recipe
+  README html files (along with making backlinks for dependencies' READMEs) and
+  for a `.. details::` directive.
+
+## Update frequency
+
+These docs are automatically built each day, after pulling the latest changes
+to bioconda-recipes. This means that newly-added recipes or recently-updated
+recipes will not show up in the package index for a day or so.
