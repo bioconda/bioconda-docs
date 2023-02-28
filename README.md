@@ -14,11 +14,11 @@ Note that prior to 2023-02-28, this documentation source was in the
 split out for simplicity and ease of maintenance.
 
 Why keep this separate from the from bioconda.github.io where the built docs
-are hosted? Because this source code is relatively small, but the built docs
-are rather large. If we worked on the source over in bioconda.github.io, even
-if source lived on a different branch the full git history (including the large
-built docs) would always need to be cloned. This separate repo allows us to
-keep editing the documentation lightweight.
+live? Because this source code is relatively small, but the built docs are
+rather large. If we worked on the source over in bioconda.github.io, even if
+the source lived on a different branch, every time it was cloned we would be
+pulling full git history (including the large built docs). This separate repo
+allows us to keep editing the documentation lightweight.
 
 ## Notes on pull requests
 
@@ -31,7 +31,7 @@ keep editing the documentation lightweight.
 
 - By default, only 10 recipes' README.html pages will be built. This
   dramatically speeds up the build process (by >10x) for faster iteration
-  times. **If you need to build all recipe README.html pages,** for some
+  times. **If you need to build all recipe README.html pages** for some
   reason, you can include the text `[build all recipes]` in the commit message
   of the commit you want to build everything for.
 
