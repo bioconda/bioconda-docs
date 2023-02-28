@@ -25,11 +25,14 @@ jobs:
           --channel bioconda \
           --strict-channel-priority
 
-    # Build docs here
-    - name: build docs
+
+    - name: restrict number of built recipes
+      if: >-
+        ${{
+          (github.ref != 'refs/heads/main') &&
+          (!contains(github.event.head_commit.message, '[build all recipes]'))
+        }}
       run: |
-        eval "$(conda shell.bash hook)"
-        conda activate ./env
 
         # For testing, use BIOCONDA_FILTER_RECIPES=10 or some small-ish number,
         # or BIOCONDA_FILTER_RECIPES=".*" or other regex. If these are set,
@@ -39,7 +42,14 @@ jobs:
         #
         # If unset, pages will be built for all recipes.
         # export BIOCONDA_FILTER_RECIPES=10
+        echo "BIOCONDA_FILTER_RECIPES=10" >> $GITHUB_ENV
 
+
+    - name: build docs
+      run: |
+        eval "$(conda shell.bash hook)"
+        export BIOCONDA_FILTER_RECIPES=${{env.BIOCONDA_FILTER_RECIPES}}
+        conda activate ./env
         make clean html SPHINXOPTS="-T -j1"
         touch build/html/.nojekyll
         tar -czf docs.tar.gz build/html
