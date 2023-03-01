@@ -106,7 +106,7 @@ html_theme_options = {
     "show_related": True,
     "font_family": "Raleway, sans-serif",
     "head_font_family": "'Lato', sans-serif",
-    "fixed_sidebar": True,
+    "fixed_sidebar": False,
 }
 
 # The name for this set of Sphinx documents.  If None, it defaults to
