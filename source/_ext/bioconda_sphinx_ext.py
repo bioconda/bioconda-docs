@@ -738,15 +738,18 @@ def add_ribbon(app, pagename, templatename, context, doctree):
         _, _, path = pagename.partition('/')
         path = path.replace('.', '/') + '.py'
         repo = 'bioconda-utils'
+        branch = 'master'
     elif pagename.startswith('recipes/') and pagename.endswith('/README'):
         repo = 'bioconda-recipes'
         path = pagename[:-len('README')] + 'meta.yaml'
+        branch = 'master'
     else:
-        repo = 'bioconda-utils'
-        path = 'docs/source/' + os.path.relpath(doctree.get('source'), app.builder.srcdir)
+        repo = 'bioconda-docs'
+        path = 'source/' + os.path.relpath(doctree.get('source'), app.builder.srcdir)
+        branch = 'main'
 
     context['git_ribbon_url'] = (f'https://github.com/bioconda/{repo}/'
-                                 f'edit/master/{path}')
+                                 f'edit/{branch}/{path}')
     context['git_ribbon_message'] = "Edit me on GitHub"
 
 
