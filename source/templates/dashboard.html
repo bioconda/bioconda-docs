@@ -2,54 +2,92 @@
 <div style="width: 100%" id="package_plot"></div>
 
 <script>
-window.onload = function() {
+  window.onload = function () {
     // Download download plot data
-    $.get( "https://raw.githubusercontent.com/bioconda/bioconda-stats/main/package-downloads/anaconda.org/bioconda.json", function( data ) {
-    data = JSON.parse(data);
-    let bioconda_data = data["downloads_per_date"].slice(-30);
+    $.get("https://raw.githubusercontent.com/bioconda/bioconda-stats/data/package-downloads/anaconda.org/bioconda/channel.tsv", function (bioconda_data) {
 
-    let spec = {
-       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-       "description": "Total bioconda downloads.",
-       "title": "Total bioconda downloads",
-       "data": {"values": []},
-       "width": "container",
-       "mark": "line",
-       "encoding": {
-         "y": {"field": "total", "type": "quantitative", "title": "total downloads", "scale": {"domain": []}},
-         "x": {"field": "date", "timeUnit": "yearmonthdate", "title": "date", "axis": {"labelAngle": -15}},
-         "color": {"value": "#43AF4E"},
-         "tooltip": {"field": "total"}
-       }
-    };
+      let spec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "description": "Total bioconda downloads.",
+        "title": "Total bioconda downloads",
+        "data": {
+          "values": bioconda_data,
+          "format": { "type": "tsv", "parse": { "total": "number", "date": "date" } }
+        },
+        "transform": [
+          {
+            "window": [{
+              "op": "rank",
+              "as": "rank"
+            }],
+            "sort": [{ "field": "date", "order": "descending" }]
+          },
+          {
+            "filter": "datum.rank <= 30"
+          },
+          {
+            "joinaggregate": [
+              { "op": "max", "field": "total", "as": "max" },
+              { "op": "min", "field": "total", "as": "min" }
+            ]
+          }
+        ],
+        "params": [
+          { "name": "max", "expr": "data('data_0')[0]['max']" },
+          { "name": "min", "expr": "data('data_0')[0]['min']" }
+        ],
+        "width": "container",
+        "mark": "line",
+        "encoding": {
+          "y": {
+            "field": "total",
+            "type": "quantitative",
+            "title": "total downloads",
+            "scale": {
+              "domainMin": { "expr": "min-1000" },
+              "domainMax": { "expr": "max+1000" }
+            }
+          },
+          "x": { "field": "date", "timeUnit": "yearmonthdate", "title": "date", "axis": { "labelAngle": -15 } },
+          "color": { "value": "#43AF4E" },
+          "tooltip": { "field": "total" }
+        }
+      };
 
-    spec.data.values = bioconda_data;
-    spec.encoding.y.scale.domain = [bioconda_data[0].total - 1000, bioconda_data[bioconda_data.length - 1].total + 1000];
-    vegaEmbed('#download_plot', spec);
+      vegaEmbed('#download_plot', spec);
     });
 
     // Download download plot data
-    $.get( "https://raw.githubusercontent.com/bioconda/bioconda-stats/main/package-downloads/anaconda.org/bioconda.json", function( p_data ) {
-    p_data = JSON.parse(p_data);
-    let package_data = p_data["downloads_per_package"].slice(-20);
+    $.get("https://raw.githubusercontent.com/bioconda/bioconda-stats/data/package-downloads/anaconda.org/bioconda/packages.tsv", function (package_data) {
 
-    let package_spec = {
-       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-       "description": "Top downloaded packages.",
-       "title": "Top 20 packages",
-       "data": {"values": []},
-       "width": "container",
-       "mark": "bar",
-       "encoding": {
-         "x": {"field": "total", "type": "quantitative", "title": "total downloads"},
-         "y": {"field": "package", "sort":"-x", "type":"nominal", "title": "package"},
-         "color": {"value": "#43AF4E"},
-         "tooltip": {"field": "total"}
-       }
-    };
+      let package_spec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "description": "Top downloaded packages.",
+        "title": "Top 20 packages",
+        "data": {
+          "values": package_data,
+          "format": { "type": "tsv", "parse": { "total": "number" } }
+        },
+        "transform": [
+          {
+            "window": [{ "op": "rank", "as": "rank" }],
+            "sort": [{ "field": "total", "order": "descending" }]
+          },
+          {
+            "filter": "datum.rank <= 20"
+          }
+        ],
+        "width": "container",
+        "mark": "bar",
+        "encoding": {
+          "x": { "field": "total", "type": "quantitative", "title": "total downloads" },
+          "y": { "field": "package", "sort": "-x", "type": "nominal", "title": "package" },
+          "color": { "value": "#43AF4E" },
+          "tooltip": { "field": "total" }
+        }
+      };
 
-    package_spec.data.values = package_data;
-    vegaEmbed('#package_plot', package_spec);
+      vegaEmbed('#package_plot', package_spec);
     });
-}
+  }
 </script>
