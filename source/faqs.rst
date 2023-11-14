@@ -80,7 +80,7 @@ What versions are supported?
 Operating Systems
 ~~~~~~~~~~~~~~~~~
 
-Bioconda only supports 64-bit Linux and macOS. ARM is not currently supported.
+Bioconda only supports Linux (64-bit and AArch64) and macOS (64-bit). ARM is not currently supported for macOS.
 
 Python
 ~~~~~~
