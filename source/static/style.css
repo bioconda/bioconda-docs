@@ -178,3 +178,7 @@ div.datechanged {
     color: #3eb049;
 }
 
+table.inventory {
+    overflow-x: scroll;
+    font-size: 0.8em;
+}
