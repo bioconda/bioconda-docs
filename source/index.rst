@@ -3,9 +3,11 @@
    To build the documentation locally, first create an environment using
    bioconda_utils/bioconda_utils-requirements.txt.
 
-   Then activate the env and run:
+   mamba create -p ./env --file https://raw.githubusercontent.com/bioconda/bioconda-utils/master/bioconda_utils/bioconda_utils-requirements.txt -y
 
-     make -C docs/ BIOCONDA_FILTER_RECIPES=2 SPHINXOPTS="-E" html
+   With that env activated, run:
+
+     make BIOCONDA_FILTER_RECIPES=2 SPHINXOPTS="-E" html
 
    This will only build 2 of the recipes pages, dramatically speeding up the
    build process.
