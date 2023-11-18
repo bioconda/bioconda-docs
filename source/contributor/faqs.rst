@@ -169,3 +169,67 @@ which elements and values can appear in ``meta.yaml``.
 
 Conda has this information available `here <https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html>`_.
 Please check that you are looking at the correct version of the documentation for the current conda version used by bioconda. 
+
+
+.. _platform-nomenclature-faq:
+
+Understanding platform nomenclature
+-----------------------------------
+
+Different CPU chips use different architecture, so programs are written
+fundamentally differently for them. Why do we care about this for conda
+packages? Because a package with compiled dependencies must have
+platform-specific dependencies.
+
+New Apple Silicon 
+
+There is a lot of confusing nomenclature surrounding them. Here is an attempt
+at clearing them up, or at least providing enough context that you can look up
+more details on your own:
+
+**instruction set, CISC, RISC, RISC-V**: The *instruction set* is the assembly
+code commands that are possible for the chip. *CISC* is "complex instruction set
+computer", prioritizing flexibility; *RISC* is "reduced instruction set
+computer", prioritizing power consumption (oversimplification, but that's the
+general idea). Instruction sets can be proprietary. ARM is a company that
+licenses a widely-used proprietary reduced instruction set. RISC-V is an open
+(non-proprietary) reduced instruction set.
+
+**ARM vs ARM RISC:** ARM is a company. They make chips (for example, the ones
+used in Raspberry Pi computers). They also license the proprietary RISC (for
+example, they license it to Apple to run on their M-series chips).
+
+``x86_64``, ``amd64``: These are synonyms for the original Intel/AMD
+architecture.
+
+``linux/x86_64``, ``linux/arm64``, ``darwin/amd64``: These are the platform
+designators when using Docker (see `multi-platform images
+<https://docs.docker.com/build/building/multi-platform/>`_ in the Docker
+documentation).
+
+``linux-64``, ``linux-aarch64``, ``osx-64``, ``osx-arm64``: These are the
+platform designators used by conda in channels hosted by Anaconda.
+
+``linux-64``, ``linux-aarch64``, ``osx-64``, ``osx-arm64``: These are the
+labels the conda ecosystem gives to packages.
+
+``aarch64``, ``arm64``: These are synonyms for ARM 64-bit architecture.
+
+**M1, M2, M3, Apple Silicon**: These are chips made by Apple and used in Macs.
+Apple licenses the ARM RISC, so they are considered aarch64 or arm64.
+
+Here is a summary table:
+
+.. list-table::
+
+  * - Linux machines from past few decades
+    - ``x86_64``, ``amd64``, ``linux/x86_64``, ``linux-64``.
+
+  * - Newer Linux machines
+    - ``aarch64``, ``arm64``, ``linux-aarch64``, ``linux/arm64``
+
+  * - Newer Macs
+    - ``M1``, ``M2``, ``M3``, ``osx-arm64``, ``aarch64``, ``arm64``, ``darwin/amd64``
+
+  * - Older Macs
+    - ``osx-64``
