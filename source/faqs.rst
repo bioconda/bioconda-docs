@@ -15,6 +15,7 @@ How do I speed up package installation?
 Speedup option 1: use ``mamba``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
 `mamba <https://github.com/mamba-org/mamba>`_ is a drop-in replacement for
 conda that uses a faster dependency solving library and parts reimplemented in
 C++ for speed. Install it just into the base environment so that it's always
@@ -39,6 +40,7 @@ channels.
 
 Speedup option 2: use environments strategically
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Here are several ways you can use environments to minimize the time spent on
 solving dependencies, which typically is what takes the longest amount of time:
 
@@ -77,21 +79,12 @@ solving dependencies, which typically is what takes the longest amount of time:
 What versions are supported?
 ----------------------------
 
-Operating Systems
-~~~~~~~~~~~~~~~~~
+**Operating Systems:**
+Bioconda supports Linux (x86_64 and aarch64/arm64) and
+macOS (64-bit). ARM is not currently supported for macOS. Windows is not
+supported.
 
-Bioconda supports Linux (x86_64 and aarch64/arm64) and macOS (64-bit). ARM
-is not currently supported for macOS. Windows is not supported.
-
-Python
-~~~~~~
-
-.. datechanged:: 2022-09-01
-   Python 3.10 support started in Aug 2022
-
-.. datechanged:: 2023-05-01
-   Python 2.7, 3.6, 3.7 support were dropped for new recipes in May 2023.
-
+**Python:**
 Bioconda currently supports Python 3.8, 3.9, and 3.10 (see :ref:`Pinned
 packages` for where this is configured).
 
@@ -104,10 +97,13 @@ environment with any version of python they say they can support. However many
 python packages in Bioconda depend on other Bioconda packages with architecture
 specific builds, such as `pysam`, and so do not meet this criteria.
 
+.. datechanged:: 2022-09-01
+   Python 3.10 support started in Aug 2022
 
-Pinned packages
-~~~~~~~~~~~~~~~
+.. datechanged:: 2023-05-01
+   Python 2.7, 3.6, 3.7 support were dropped for new recipes in May 2023.
 
+**Pinned packages:**
 Some packages require `ABI
 <https://en.wikipedia.org/wiki/Application_binary_interface>`_ compatibility
 with underlying libraries. To ensure that packages can work together, there are
@@ -125,9 +121,7 @@ This is *in addition to* the conda-forge specified versions,
 <https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yaml>`_
 which pins versions of base dependencies like boost, zlib, and many others.
 
-Unsupported versions
-~~~~~~~~~~~~~~~~~~~~
-
+**Unsupported versions:**
 If there is a version of a dependency you wish to build against that Bioconda
 does not currently support, please reach out to the `Bioconda Gitter
 <https://gitter.im/bioconda/Lobby>`_ for more information about if supporting
@@ -161,20 +155,28 @@ maintain) the same environment.
 
 .. _conda-anaconda-minconda:
 
-What's the difference between Anaconda, conda, Miniconda, and mamba?
---------------------------------------------------------------------
+What's the difference between Anaconda, conda, Miniconda, mamba, Mambaforge, micromamba?
+----------------------------------------------------------------------------------------
 
 This `blog post from Anaconda <https://www.anaconda.com/blog/is-conda-free>`_
 gives a lot of context on the Anaconda/conda ecosystem.
 
 
-- conda is the name of the package manager, which is what runs when you call,
+- **conda** is the name of the package manager, which is what runs when you call,
   e.g., ``conda install``.
-- mamba is a drop-in replacement for conda (see above for details)
-- Anaconda is a large installation including Python, conda, and a large number
+- **mamba** is a drop-in replacement for conda
+- **Anaconda** is a large installation including Python, conda, and a large number
   of packages.
-- Miniconda just has conda and its dependencies (in contrast to the larger
-  Anaconda distribution).
+- **Miniconda** just has conda and its dependencies (in contrast to the larger
+  Anaconda distribution)
+- **Miniforge** is like miniconda, but with the conda-forge channel
+  preconfigured and all packages coming from the conda-forge and *not* the
+  ``defaults`` channel. 
+- **Mambaforge** is like miniforge, but has mamba installed into the base environment.
+- **Micromamba** is not a conda distribution. Rather, it is a minimal binary
+  that has roughly the same commands as mamba, so that a single executable
+  (rather than an entire Python installation required for conda itself) can be
+  used to create environments. Micromamba is currently still experimental.
 
 The `Anaconda Python distribution <https://www.continuum.io/downloads>`_
 started out as a bundle of scientific Python packages that were otherwise
@@ -196,8 +198,15 @@ This installs only what you need to run conda itself, which can then be used to
 create other environments. So the "mini" in Miniconda means that it's
 a fraction of the size of the full Anaconda installation.
 
-So: conda is a package manager, Miniconda is the conda installer, and Anaconda
-is a scientific Python distribution that also includes conda.
+Then the conda-forge channel gained popularity. Miniforge was developed to
+quickly and easily get a conda-forge-ready conda installation. Then as mamba
+gained popularity, the Mambaforge variant was created.
+
+Even with those easier methods, sometimes the entire base Python installation that comes with conda/mamba was too much overhead. Micromamba has a single binary that is very fast to install, and is perfect for CI environments.
+
+So: conda is a package manager, Anaconda is a scientific Python distribution
+that also includes conda, and the rest are other flavors of getting
+a conda/mamba installation.
 
 What's the difference between a recipe and a package?
 -----------------------------------------------------
@@ -224,22 +233,6 @@ with ``conda install``.
     what a package contains and how it is installed into an
     environment.
 
-What's the difference between miniconda, miniforge, mambaforge, micromamba?
----------------------------------------------------------------------------
-
-**Miniconda** is the slimmed-down version of the Anaconda distribution;
-miniconda only has conda and its dependencies.
-
-**Miniforge** is like miniconda, but with the conda-forge channel preconfigured
-and all packages coming from the conda-forge and *not* the ``defaults``
-channel.
-
-**Mambaforge** is like miniforge, but has mamba installed into the base environment.
-
-**Micromamba** is not a conda distribution. Rather, it is a minimal binary that
-has roughly the same commands as mamba, so that a single executable (rather
-than an entire Python installation required for conda itself) can be used to
-create environments. Micromamba is currently still experimental.
 
 Why are Bioconductor data packages failing to install?
 ------------------------------------------------------
@@ -438,17 +431,109 @@ which elements and values can appear in ``meta.yaml``.
 Conda has this information available `here <https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html>`_.
 Please check that you are looking at the correct version of the documentation for the current conda version used by bioconda. 
 
+What are the ``host`` and ``build`` sections of a recipe?
+---------------------------------------------------------
+
+The ``requirements:build`` section of a meta.yaml file is used to specify the
+tools for *building* the package, but not necessarily for *running* it. This is
+where compilers should go. The build section might also include tools like
+``make``, ``automake``, ``cmake``, or ``git``. If there are no compilers or
+other build tools, there should be no ``build:`` section.
+
+The ``requirements::host`` section of a meta.yaml is used to specify the
+*runtime* dependencies of the package.
+
+.. seealso::
+
+    See the `requirements section <conda-build:requirements>` of the
+    conda docs for more info.
+
+
+.. _compiler-tools:
+
+Compiler tools
+--------------
+
+Use the syntax ``{{ compiler('c') }}``, ``{{ compiler('cxx') }}``, and/or ``{{
+compiler('fortran') }}``. These should go in the ``build`` section, and all
+other build dependencies should go in the ``host`` section.
+
+Anaconda provides platform-specific compilers that are automatically
+determined. The string ``{{ compiler('c') }}`` will resolve to ``gcc`` on
+Linux, but ``clang`` on macOS (osx-64).
+
+
+.. seealso::
+
+    - The `compiler tools <conda-build:compiler-tools>` section of the
+      conda docs has much more info.
+
+    - The default compiler options are defined by conda-build in the
+      `variants.DEFAULT_COMPILERS
+      <https://github.com/conda/conda-build/blob/master/conda_build/variants.py#L42>`_
+      variable.
+
+    - More details on "strong" and "weak" exports (using examples of
+      libpng and libgcc) can be found in the `export runtime
+      requirements <conda-build:run_exports>` conda documentation.
+
+
+.. _global-pinning:
+
+How does global pinning work?
+-----------------------------
+
+Global pinning is the idea of making sure all recipes use the same versions of
+common libraries. Otherwise, problems arise when the build-time version does not match
+the install-time version. Furthermore, all packages installed into the same
+environment should have been built using the same version so that they can
+co-exist.
+
+For example, many bioinformatics tools have ``zlib`` as a dependency.
+The version of ``zlib`` used when building the package should be the same as the
+version used when installing the package into a new environment. This implies
+that we need to specify the ``zlib`` version in one place and have *all recipes
+intended to coexist in the same environment** use that version.
+
+This is handled with special build config files. Since we rely heavily on the
+conda-forge channel, the bioconda build system installs the conda-forge
+`conda_build_config.yaml
+<https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yaml>`_
+into our build environment so that it can be used for building all recipes.
+This is then combined with the bioconda-specific
+`bioconda-Utils-conda_build_config.yaml
+<https://github.com/bioconda/bioconda-utils/blob/master/bioconda_utils/bioconda_utils-conda_build_config.yaml>`_.
+Note that in some cases the bioconda config may override some of the
+conda-forge configs. For example, historically, we did this when we wanted to
+support older Python versions.
+
+The idea here is to specify that any time a dependency (``zlib``, in our
+running example) is used as a build dependency, it should also be automatically
+be installed as a run dependency without having to explicitly add it as such in
+the recipe. This specification is done in the ``zlib`` recipe itself (which is
+hosted by conda-forge), so in general bioconda collaborators can just add
+``zlib`` as a build dependency.
+
+Note that we don't have to specify the version of ``zlib`` in the recipe -- it
+is pinned in that ``conda_build_config.yaml`` file we share with conda-forge.
+
+In a similar fashion, the reason that we don't have to specify ``libgcc`` as
+a *run* dependency is that ``{{ compiler('c') }}`` automatically exports
+``libgcc`` as a run dependency of any package that uses the C compiler to
+build.
+
 .. _platform-nomenclature-faq:
 
 Understanding platform nomenclature
 -----------------------------------
 
+.. datechanged:: 2023-11-18
+   Added section
+
 Different CPU chips use different architecture, so programs are written
 fundamentally differently for them. Why do we care about this for conda
 packages? Because a package with compiled dependencies must have
 platform-specific dependencies.
-
-New Apple Silicon 
 
 There is a lot of confusing nomenclature surrounding them. Here is an attempt
 at clearing them up, or at least providing enough context that you can look up
@@ -500,3 +585,4 @@ Here is a summary table:
 
   * - Older Macs
     - ``osx-64``
+

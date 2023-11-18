@@ -41,6 +41,3 @@ challenging to package. The topics below provide more details.
 
     linting
     updating
-    cb3
-
-
