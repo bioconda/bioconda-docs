@@ -80,7 +80,8 @@ What versions are supported?
 Operating Systems
 ~~~~~~~~~~~~~~~~~
 
-Bioconda only supports Linux (64-bit and AArch64) and macOS (64-bit). ARM is not currently supported for macOS.
+Bioconda supports Linux (x86_64 and aarch64/arm64) and macOS (64-bit). ARM
+is not currently supported for macOS. Windows is not supported.
 
 Python
 ~~~~~~
@@ -162,6 +163,10 @@ maintain) the same environment.
 
 What's the difference between Anaconda, conda, Miniconda, and mamba?
 --------------------------------------------------------------------
+
+This `blog post from Anaconda <https://www.anaconda.com/blog/is-conda-free>`_
+gives a lot of context on the Anaconda/conda ecosystem.
+
 
 - conda is the name of the package manager, which is what runs when you call,
   e.g., ``conda install``.
@@ -383,3 +388,115 @@ The ``--no-builds`` argument completely removes the build number from the
 output, avoiding future errors when trying to rebuild the environment, and
 allowing the conda solver to identify the packages that can co-exist in the
 same environment.
+
+How are dependencies pinned to particular versions?
+---------------------------------------------------
+
+In some cases a recipe may need to pin the version of a dependency.
+A global set of default versions to pin against is shared with conda-forge and
+can be found `here <https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yaml>`_.
+For new dependencies that are contained in conda-forge and not yet in this list,
+please update the list via a pull request.
+Local pinnings can be achieved by adding a file ``conda_build_config.yaml`` next
+to your ``meta.yaml``.
+
+To find out against which version you can pin a package, e.g. x.y.* or x.* please use `ABI-Laboratory <https://abi-laboratory.pro/tracker/>`_.
+
+What's the lifecycle of a bioconda package?
+-------------------------------------------
+
+- Submit a pull request with a new recipe or an updated recipe
+- Circle CI automatically builds and tests the changed recipe[s] using
+  conda-build. Test results are shown on the PR.
+- If tests fail, push changes to PR until they pass.
+- Once tests pass, merge into master branch
+- Circle CI tests again, but this time after testing the built packages are
+  uploaded to the bioconda channel on anaconda.org.
+- Users can now install the package just like any other conda package with
+  ``conda install``.
+
+Once uploaded to anaconda.org, it is our intention to never delete any old
+packages. Even if a recipe in the bioconda repo is updated to a new version,
+the old version will remain on anaconda.org. ContinuumIO has graciously agreed
+to sponsor the storage required by the bioconda channel.
+Nevertheless, it can sometimes happen that we have to mark packages as broken
+in order to avoid that they are accidentally pulled by the conda solver.
+In such a case it is only possible to install them by specifically considering
+the ``broken`` label, i.e.,
+
+.. code-block:: bash
+
+    conda install -c conda-forge -c bioconda -c defaults -c bioconda/label/broken my-package=<broken-version>
+
+Where can I find more info on ``meta.yaml``?
+--------------------------------------------
+
+The ``meta.yaml`` file is conda's metadata definition file for recipes. 
+If you are developing a new recipe or are trying to update or improve an existing one, it can be helpful to know  
+which elements and values can appear in ``meta.yaml``.
+
+Conda has this information available `here <https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html>`_.
+Please check that you are looking at the correct version of the documentation for the current conda version used by bioconda. 
+
+.. _platform-nomenclature-faq:
+
+Understanding platform nomenclature
+-----------------------------------
+
+Different CPU chips use different architecture, so programs are written
+fundamentally differently for them. Why do we care about this for conda
+packages? Because a package with compiled dependencies must have
+platform-specific dependencies.
+
+New Apple Silicon 
+
+There is a lot of confusing nomenclature surrounding them. Here is an attempt
+at clearing them up, or at least providing enough context that you can look up
+more details on your own:
+
+**instruction set, CISC, RISC, RISC-V**: The *instruction set* is the assembly
+code commands that are possible for the chip. *CISC* is "complex instruction set
+computer", prioritizing flexibility; *RISC* is "reduced instruction set
+computer", prioritizing power consumption (oversimplification, but that's the
+general idea). Instruction sets can be proprietary. ARM is a company that
+licenses a widely-used proprietary reduced instruction set. RISC-V is an open
+(non-proprietary) reduced instruction set.
+
+**ARM vs ARM RISC:** ARM is a company. They make chips (for example, the ones
+used in Raspberry Pi computers). They also license the proprietary RISC (for
+example, they license it to Apple to run on their M-series chips).
+
+``x86_64``, ``amd64``: These are synonyms for the original Intel/AMD
+architecture.
+
+``linux/x86_64``, ``linux/arm64``, ``darwin/amd64``: These are the platform
+designators when using Docker (see `multi-platform images
+<https://docs.docker.com/build/building/multi-platform/>`_ in the Docker
+documentation).
+
+``linux-64``, ``linux-aarch64``, ``osx-64``, ``osx-arm64``: These are the
+platform designators used by conda in channels hosted by Anaconda.
+
+``linux-64``, ``linux-aarch64``, ``osx-64``, ``osx-arm64``: These are the
+labels the conda ecosystem gives to packages.
+
+``aarch64``, ``arm64``: These are synonyms for ARM 64-bit architecture.
+
+**M1, M2, M3, Apple Silicon**: These are chips made by Apple and used in Macs.
+Apple licenses the ARM RISC, so they are considered aarch64 or arm64.
+
+Here is a summary table:
+
+.. list-table::
+
+  * - Linux machines from past few decades
+    - ``x86_64``, ``amd64``, ``linux/x86_64``, ``linux-64``.
+
+  * - Newer Linux machines
+    - ``aarch64``, ``arm64``, ``linux-aarch64``, ``linux/arm64``
+
+  * - Newer Macs
+    - ``M1``, ``M2``, ``M3``, ``osx-arm64``, ``aarch64``, ``arm64``, ``darwin/amd64``
+
+  * - Older Macs
+    - ``osx-64``
