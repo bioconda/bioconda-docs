@@ -29,8 +29,9 @@ decides whether it will run its jobs or not.
 * If any of the pushed commit messages contains the substring ``[ci run]`` the CI jobs are executed.
 * If not, no CI jobs are executed.
 
-The reason for this behavior is that we want to avoid race conditions caused by multiple CI jobs
-spawned from different commits to be exectuted at the same time.
+The reason for this behavior is that we want to avoid race conditions caused by
+multiple CI jobs spawned from different commits, possibly from different
+people, to be exectuted at the same time.
 
 In order to simplify interactions with the bulk CI, bioconda-utils offers therefore
 some dedicated subcommands:
@@ -109,8 +110,7 @@ example is updating pinnings to support Python 3.10.
    step 6-7 again. If the run has finished without any build failure and did not time out before checking all
    recipes, you can go on with step 7.
 
-9. Once all the packages have either been successfully built or skiplisted, merge in the master branch 
-   (after doing a git pull on it).
+9. Once all the packages have either been successfully built or skiplisted, pull the master branch and merge it into bulk.
    Usually, conflicts can occur here due to build-numbers having been increased in the master branch while you
    did your changes in bulk. For such cases (which should be not so many) you can just increase the build number to
    ``max(build_number_master, build_number_bulk)`` and **bulk-commit** all of those in a row.
