@@ -26,6 +26,7 @@ def setup(app):
 extensions = [
     "bioconda_sphinx_ext",
     "details_ext",
+    "datechanged_ext",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinx.ext.mathjax",
