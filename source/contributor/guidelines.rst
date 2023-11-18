@@ -215,7 +215,7 @@ a command-line tool, in which case that should be tested as well.
 
 
 By default, Python recipes (those that have ``python`` listed as a dependency)
-must be successfully built and tested on Python 2.7, 3.6, and 3.7 in order to
+must be successfully built and tested on all supported Python versions in order to
 pass. However, many Python packages are not fully compatible across all Python
 versions. Use the `preprocessing selectors <conda-build:preprocess-selectors>`
 in the meta.yaml file along with the ``build/skip`` entry to indicate that

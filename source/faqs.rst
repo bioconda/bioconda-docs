@@ -85,7 +85,17 @@ Bioconda only supports Linux (64-bit and AArch64) and macOS (64-bit). ARM is not
 Python
 ~~~~~~
 
-Bioconda only supports python 2.7, 3.6, 3.7, 3.8 and 3.9.
+.. datechanged:: 2022-09-01
+   Python 3.10 support started in Aug 2022
+
+.. datechanged:: 2023-05-01
+   Python 2.7, 3.6, 3.7 support were dropped for new recipes in May 2023.
+
+Bioconda currently supports Python 3.8, 3.9, and 3.10 (see :ref:`Pinned
+packages` for where this is configured).
+
+There are still packages in the Bioconda channel for earlier versions of
+Python (2.7, 3.6, and 3.7).
 
 The exception to this is Bioconda packages which declare `noarch: python` and
 only depend on such packages - those packages can be installed in an
