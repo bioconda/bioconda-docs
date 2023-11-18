@@ -279,6 +279,7 @@ Core
 * `Elmar Pruesse <https://github.com/epruesse>`_
 * `Robert A. Petit III <https://github.com/rpetit3>`_
 * `Christian Brueffer <https://github.com/cbrueffer>`_
+* `Alicia Evans <https://github.com/aliciaaevans>`_
 
 Former core members
 ~~~~~~~~~~~~~~~~~~~
