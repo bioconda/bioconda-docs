@@ -168,3 +168,13 @@ details a.headerlink {
     color: #ccc;
     visibility: visible;
 }
+
+div.datechanged {
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+.versionmodified {
+    color: #3eb049;
+}
+
