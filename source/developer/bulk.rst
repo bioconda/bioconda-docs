@@ -97,7 +97,7 @@ example is updating pinnings to support Python 3.10.
 
 6. Then, **bulk-commit** and push the changes.
 
-7. Once the CI run has finished, inspect all build failures (see :ref:`handling-build-failues`).
+7. Once the CI run has finished, inspect all build failures (see :ref:`handling-build-failures`).
    For each failure, decide whether the recipe shall be skiplisted or whether you would like to fix it.
    In general it is advisable to fix all libraries on which many recipes depend and anything else
    that is obvious and easy. For the rest, mark the recipes as skiplisted in the build failure file.
@@ -131,7 +131,7 @@ Handling build failures
 
 Build failures are stored in a file ``build_failure.<arch>.yaml`` next to each failing recipe.
 You can list all build failures stored in the current branch of bioconda-recipes via the command
-``bioconda-utils list-build-failures recipes config.yaml``. The presented table will be sorted by 
+``bioconda-utils list-build-failures recipes config.yml``. The presented table on stdout will be sorted by 
 the number of dependencies and package downloads, which should help for prioritizing the fixing work.
 
 This file can look e.g. like this:
@@ -153,7 +153,7 @@ Check out all possibilities in the corresponding help message:
 
 .. code-block:: bash
 
-    bioconda-utils annotate-build-failure --help
+    bioconda-utils annotate-build-failures --help
 
 Skiplisted recipes from the master branch are automatically displayed in a `wiki page <https://github.com/bioconda/bioconda-recipes/wiki/build-failures>`_,
 so that others can pick them up for providing a fix.
