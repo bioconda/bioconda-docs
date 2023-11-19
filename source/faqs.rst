@@ -86,17 +86,16 @@ macOS (64-bit). ARM is not currently supported for macOS. Windows is not
 supported.
 
 **Python:**
-Bioconda currently supports Python 3.8, 3.9, and 3.10 (see :ref:`Pinned
-packages` for where this is configured).
+Bioconda currently supports Python 3.8, 3.9, and 3.10 (see "pinned packages"
+below for where this is configured). There are still packages in the Bioconda
+channel for earlier versions of Python (2.7, 3.6, and 3.7), but new packages
+are not built for these versions.
 
-There are still packages in the Bioconda channel for earlier versions of
-Python (2.7, 3.6, and 3.7).
-
-The exception to this is Bioconda packages which declare `noarch: python` and
-only depend on such packages - those packages can be installed in an
-environment with any version of python they say they can support. However many
-python packages in Bioconda depend on other Bioconda packages with architecture
-specific builds, such as `pysam`, and so do not meet this criteria.
+Packages which declare `noarch: python` and only depend on packages that also
+declare `noarch: python` can be installed in an environment with any version of
+Python they say they can support. However many Python packages in Bioconda
+depend on other Bioconda packages with architecture specific builds, such as
+`pysam`, and so do not meet this criteria.
 
 .. datechanged:: 2022-09-01
    Python 3.10 support started in Aug 2022
@@ -104,23 +103,7 @@ specific builds, such as `pysam`, and so do not meet this criteria.
 .. datechanged:: 2023-05-01
    Python 2.7, 3.6, 3.7 support were dropped for new recipes in May 2023.
 
-**Pinned packages:**
-Some packages require `ABI
-<https://en.wikipedia.org/wiki/Application_binary_interface>`_ compatibility
-with underlying libraries. To ensure that packages can work together, there are
-some libraries that need to be *pinned*, or fixed to a particular version.
-Other packages are then built with that specific version (and therefore that
-specific ABI) to ensure they can all work together.
-
-The authoritative source for which packages are pinned and to which versions
-can be found in the `bioconda_utils-conda_build_config.yaml
-<https://github.com/bioconda/bioconda-utils/blob/master/bioconda_utils/bioconda_utils-conda_build_config.yaml>`_
-file.
-
-This is *in addition to* the conda-forge specified versions,
-`conda_build_config.yaml
-<https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yaml>`_
-which pins versions of base dependencies like boost, zlib, and many others.
+**Globally-pinned versions:** See :ref:`global-pinning` for details.
 
 **Unsupported versions:**
 If there is a version of a dependency you wish to build against that Bioconda
@@ -139,7 +122,7 @@ You can view your created environments with ``conda env list``.
 
 Note that if keeping track of different environment names
 becomes a burden, you can create an environment in the same directory as
-a project with the ``-p`` argument, e.g., 
+a project with the ``-p`` argument, e.g.,
 
 .. code-block:: bash
 
@@ -172,7 +155,7 @@ gives a lot of context on the Anaconda/conda ecosystem.
   Anaconda distribution)
 - **Miniforge** is like miniconda, but with the conda-forge channel
   preconfigured and all packages coming from the conda-forge and *not* the
-  ``defaults`` channel. 
+  ``defaults`` channel.
 - **Mambaforge** is like miniforge, but has mamba installed into the base environment.
 - **Micromamba** is not a conda distribution. Rather, it is a minimal binary
   that has roughly the same commands as mamba, so that a single executable
@@ -350,7 +333,7 @@ everywhere in conda-forge and Bioconda to maintain ABI compatibility
 conda-forge pinnings `here
 <https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/main/recipe/conda_build_config.yaml>`_,
 and the bioconda-specific ones `here
-<https://github.com/bioconda/bioconda-utils/blob/master/bioconda_utils/bioconda_utils-conda_build_config.yaml>`_. 
+<https://github.com/bioconda/bioconda-utils/blob/master/bioconda_utils/bioconda_utils-conda_build_config.yaml>`_.
 
 In the case of samtools, that hash ``h1170115`` incorporates the packages and
 versions of all of its dependencies that are pinned. That includes gcc, zlib,
@@ -425,12 +408,12 @@ the ``broken`` label, i.e.,
 Where can I find more info on ``meta.yaml``?
 --------------------------------------------
 
-The ``meta.yaml`` file is conda's metadata definition file for recipes. 
-If you are developing a new recipe or are trying to update or improve an existing one, it can be helpful to know  
+The ``meta.yaml`` file is conda's metadata definition file for recipes.
+If you are developing a new recipe or are trying to update or improve an existing one, it can be helpful to know
 which elements and values can appear in ``meta.yaml``.
 
 Conda has this information available `here <https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html>`_.
-Please check that you are looking at the correct version of the documentation for the current conda version used by bioconda. 
+Please check that you are looking at the correct version of the documentation for the current conda version used by bioconda.
 
 What are the ``host`` and ``build`` sections of a recipe?
 ---------------------------------------------------------
@@ -484,20 +467,21 @@ Linux, but ``clang`` on macOS (osx-64).
 How does global pinning work?
 -----------------------------
 
-Global pinning is the idea of making sure all recipes use the same versions of
-common libraries. Otherwise, problems arise when the build-time version does not match
-the install-time version. Furthermore, all packages installed into the same
-environment should have been built using the same version so that they can
-co-exist.
+We can have conflicts when the version of a common library used when the
+package is originally *built* differs from the version when the package is
+*installed*. All packages intending to be installed into the same environment
+should be built using the same versions of common libraries so that they can
+co-exist. **Global pinning** is the idea of making sure all recipes use the
+same versions of common libraries.
 
 For example, many bioinformatics tools have ``zlib`` as a dependency.
 The version of ``zlib`` used when building the package should be the same as the
 version used when installing the package into a new environment. This implies
 that we need to specify the ``zlib`` version in one place and have *all recipes
-intended to coexist in the same environment** use that version.
+intended to coexist in the same environment* use that version.
 
-This is handled with special build config files. Since we rely heavily on the
-conda-forge channel, the bioconda build system installs the conda-forge
+This is configured with special build config files. Since we rely heavily on
+the conda-forge channel, the bioconda build system installs the conda-forge
 `conda_build_config.yaml
 <https://github.com/conda-forge/conda-forge-pinning-feedstock/blob/master/recipe/conda_build_config.yaml>`_
 into our build environment so that it can be used for building all recipes.
@@ -532,25 +516,24 @@ Understanding platform nomenclature
    Added section
 
 Different CPU chips use different architecture, so programs are written
-fundamentally differently for them. Why do we care about this for conda
-packages? Because a package with compiled dependencies must have
-platform-specific dependencies.
+fundamentally differently for them. A package with compiled dependencies must
+therefore use platform-specific dependencies.
 
 There is a lot of confusing nomenclature surrounding them. Here is an attempt
 at clearing them up, or at least providing enough context that you can look up
 more details on your own:
 
 **instruction set, CISC, RISC, RISC-V**: The *instruction set* is the assembly
-code commands that are possible for the chip. *CISC* is "complex instruction set
-computer", prioritizing flexibility; *RISC* is "reduced instruction set
-computer", prioritizing power consumption (oversimplification, but that's the
-general idea). Instruction sets can be proprietary. ARM is a company that
-licenses a widely-used proprietary reduced instruction set. RISC-V is an open
-(non-proprietary) reduced instruction set.
+code commands that are possible for the chip. *CISC* is "complex instruction
+set computer" which prioritizes flexibility. *RISC* is "reduced instruction set
+computer" which prioritizing power consumption (this oversimplification, but
+that's the general idea). Instruction sets can be proprietary. ARM is a company
+that licenses a widely-used proprietary reduced instruction set. RISC-V is an
+open (non-proprietary) reduced instruction set.
 
 **ARM vs ARM RISC:** ARM is a company. They make chips (for example, the ones
-used in Raspberry Pi computers). They also license the proprietary RISC (for
-example, they license it to Apple to run on their M-series chips).
+used in Raspberry Pi computers). They also license the proprietary instruction
+set (for example, they license it to Apple to run on their M-series chips).
 
 ``x86_64``, ``amd64``: These are synonyms for the original Intel/AMD
 architecture.
@@ -562,9 +545,6 @@ documentation).
 
 ``linux-64``, ``linux-aarch64``, ``osx-64``, ``osx-arm64``: These are the
 platform designators used by conda in channels hosted by Anaconda.
-
-``linux-64``, ``linux-aarch64``, ``osx-64``, ``osx-arm64``: These are the
-labels the conda ecosystem gives to packages.
 
 ``aarch64``, ``arm64``: These are synonyms for ARM 64-bit architecture.
 
@@ -586,4 +566,3 @@ Here is a summary table:
 
   * - Older Macs
     - ``osx-64``
-
