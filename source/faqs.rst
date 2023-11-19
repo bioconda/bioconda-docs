@@ -571,19 +571,3 @@ platform designators used by conda in channels hosted by Anaconda.
 
 **M1, M2, M3, Apple Silicon**: These are chips made by Apple and used in Macs.
 Apple licenses the ARM RISC, so they are considered aarch64 or arm64.
-
-Here is a summary table:
-
-.. list-table::
-
-  * - Linux machines from past few decades
-    - ``x86_64``, ``amd64``, ``linux/x86_64``, ``linux-64``.
-
-  * - Newer Linux machines
-    - ``aarch64``, ``arm64``, ``linux-aarch64``, ``linux/arm64``
-
-  * - Newer Macs
-    - ``M1``, ``M2``, ``M3``, ``osx-arm64``, ``aarch64``, ``arm64``, ``darwin/amd64``
-
-  * - Older Macs
-    - ``osx-64``
