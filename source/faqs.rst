@@ -44,7 +44,7 @@ Speedup option 2: use environments strategically
 Here are several ways you can use environments to minimize the time spent on
 solving dependencies, which typically is what takes the longest amount of time:
 
-1. Keep the ``base`` environment small.
+1. **Keep the base environment small.**
 
    If you install everything into the same environment (e.g. the ``base``
    environment, which is used any time you don't otherwise specify an
@@ -52,29 +52,30 @@ solving dependencies, which typically is what takes the longest amount of time:
    to do a lot of work to make sure all of the many packages are mutually
    compatible with each other.
 
-2. Use smaller environments.
+2. **Use smaller environments.**
 
    Fewer packages means less work for the solver. Try to use environments only
    containing what you need for a particular project or task.
 
-3. Pin dependencies.
+3. **Pin dependencies.**
 
    Sometimes pinning dependencies to a specific version can speed up the
    solving, since it reduces the search space for the solver. In some cases
    this may backfire though. For example, you can't pin an older version of
    R and also use newer R packages that don't support that version of R.
 
-4. Create an environment from a file with all dependencies.
+4. **Create an environment from a file with all dependencies.**
 
    Creating an environment with all dependencies at once can be faster than
    incrementally adding packages to an existing environment. For example
    ``conda create -n myenv --file requirements.txt``, or ``conda env create
    --file env.yaml``.
 
-5. Use strict channel priority.
+5. **Use strict channel priority.**
 
    Ensure that you've run ``conda config --set channel_priority strict`` to
-   respect the configured channel order. This can also speed up the solving.
+   respect the configured channel order, as recommended in the setup
+   instructions. This can also speed up the solving.
 
 What versions are supported?
 ----------------------------

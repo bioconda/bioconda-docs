@@ -298,8 +298,6 @@ wonderful community which includes over 1800 (as of 2023) `contributors
 <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
 
 
-
-
 Table of contents
 =================
 
