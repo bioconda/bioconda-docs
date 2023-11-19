@@ -82,7 +82,7 @@ What versions are supported?
 
 **Operating Systems:**
 Bioconda supports Linux (x86_64 and aarch64/arm64) and
-macOS (64-bit). ARM is not currently supported for macOS. Windows is not
+macOS (x86_64). ARM is not currently supported for macOS. Windows is not
 supported.
 
 **Python:**
@@ -155,8 +155,9 @@ gives a lot of context on the Anaconda/conda ecosystem.
   Anaconda distribution)
 - **Miniforge** is like miniconda, but with the conda-forge channel
   preconfigured and all packages coming from the conda-forge and *not* the
-  ``defaults`` channel.
-- **Mambaforge** is like miniforge, but has mamba installed into the base environment.
+  ``defaults`` channel. It also now has mamba and libmamba included.
+- **Mambaforge** is like miniforge, but has mamba installed into the base
+  environment. It is currently deprecated.
 - **Micromamba** is not a conda distribution. Rather, it is a minimal binary
   that has roughly the same commands as mamba, so that a single executable
   (rather than an entire Python installation required for conda itself) can be
@@ -412,8 +413,10 @@ The ``meta.yaml`` file is conda's metadata definition file for recipes.
 If you are developing a new recipe or are trying to update or improve an existing one, it can be helpful to know
 which elements and values can appear in ``meta.yaml``.
 
-Conda has this information available `here <https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html>`_.
-Please check that you are looking at the correct version of the documentation for the current conda version used by bioconda.
+Conda has this information available `here
+<https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html>`_.
+Please check that you are looking at the correct version of the documentation
+for the current conda version used by bioconda.
 
 What are the ``host`` and ``build`` sections of a recipe?
 ---------------------------------------------------------
