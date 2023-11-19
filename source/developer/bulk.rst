@@ -129,10 +129,12 @@ example is updating pinnings to support Python 3.10.
 Handling build failures
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-Build failures are stored in a file ``build_failure.<arch>.yaml`` next to each failing recipe.
-You can list all build failures stored in the current branch of bioconda-recipes via the command
-``bioconda-utils list-build-failures recipes config.yml``. The presented table on stdout will be sorted by 
-the number of dependencies and package downloads, which should help for prioritizing the fixing work.
+Build failures are stored in a file ``build_failure.<arch>.yaml`` next to each
+failing recipe. You can list all build failures stored in the current branch of
+bioconda-recipes via the command ``bioconda-utils list-build-failures recipes
+config.yml``. This reads the yaml files from failing recipes, and prints
+a table on stdout that will be sorted by the number of dependencies and package
+downloads, which should help for prioritizing the fixing work.
 
 This file can look e.g. like this:
 
@@ -230,5 +232,7 @@ Some unordered notes on working with the bulk branch:
   that don't need to be rebuilt, but that work needs to be done simply to
   figure out if a rebuild is needed, and so this is expected.
 
-- The bulk runs take place on GitHub Actions, and the configuration is in
-  :file:`.github/workflows/Bulk.yml`.
+- For ``linux-64`` and ``osx-64``,  the bulk runs take place on GitHub Actions,
+  and the configuration is in :file:`.github/workflows/Bulk.yml`. For
+  ``linux-aarch64``, the builds take place on CircleCI and the configuration is
+  in :file:`.circleci/config.yml`.
