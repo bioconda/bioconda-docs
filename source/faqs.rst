@@ -427,7 +427,20 @@ where compilers should go. The build section might also include tools like
 ``make``, ``automake``, ``cmake``, or ``git``. If there are no compilers or
 other build tools, there should be no ``build:`` section.
 
-The ``requirements::host`` section of a meta.yaml is used to specify the
+The ``requirements:host`` section is used to specify *shared libraries*. It was
+originally introduced to support cross-compiling (e.g., build on linux-64 but
+output a package to be used on linux-aarch64) and the shared libraries here are
+what's needed on the target (e.g. linux-aarch64 in this example). In practice,
+this is where the base interpreter ``python`` or ``r-base`` should go for
+Python and R packages. ``pip`` is usually here as well, and ``setuptools`` if
+it is required for the build process. ``cython`` would go here. If a package
+`builds against numpy
+<https://conda-forge.org/docs/maintainer/knowledge_base.html#building-against-numpy>`_,
+then ``numpy`` should go here (otherwise, it should go in the ``run:``
+requirements). Shared libraries like ``zlib``, ``hdf5``, ``libcurl``, and
+``htslib`` should go here in ``requirements:host``.
+
+The ``requirements:run`` section of a meta.yaml is used to specify the
 *runtime* dependencies of the package.
 
 .. seealso::
