@@ -157,7 +157,8 @@ gives a lot of context on the Anaconda/conda ecosystem.
   preconfigured and all packages coming from the conda-forge and *not* the
   ``defaults`` channel. It also now has mamba and libmamba included.
 - **Mambaforge** is like miniforge, but has mamba installed into the base
-  environment. It is currently deprecated.
+  environment. While not strictly deprecated, its use is discouraged as of
+  Sept 2023 (see `miniforge README <https://github.com/conda-forge/miniforge>`_)>
 - **Micromamba** is not a conda distribution. Rather, it is a minimal binary
   that has roughly the same commands as mamba, so that a single executable
   (rather than an entire Python installation required for conda itself) can be
