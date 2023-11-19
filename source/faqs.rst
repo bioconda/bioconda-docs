@@ -542,14 +542,19 @@ more details on your own:
 **instruction set, CISC, RISC, RISC-V**: The *instruction set* is the assembly
 code commands that are possible for the chip. *CISC* is "complex instruction
 set computer" which prioritizes flexibility. *RISC* is "reduced instruction set
-computer" which prioritizing power consumption (this oversimplification, but
-that's the general idea). Instruction sets can be proprietary. ARM is a company
-that licenses a widely-used proprietary reduced instruction set. RISC-V is an
-open (non-proprietary) reduced instruction set.
+computer" which prioritizing power consumption (this is an oversimplification,
+but that's the general idea). Instruction sets can be proprietary. `Arm
+<https://arm.com/company>`_ is a company that licenses a widely-used
+proprietary reduced instruction set. RISC-V is an open (non-proprietary)
+reduced instruction set.
 
-**ARM vs ARM RISC:** ARM is a company. They make chips (for example, the ones
-used in Raspberry Pi computers). They also license the proprietary instruction
-set (for example, they license it to Apple to run on their M-series chips).
+**Arm vs ARM:** Arm is the company that licenses the proprietary instruction
+set For example, they license it to Apple to run on their M-series chips. ARM
+(in all caps) refers to the family of RISC instruction sets, and by extension
+chips that use the instruction sets. It is also an acronym for Advanced RISC
+Machines and the eariler Acorn RISC Machine). This `blog post
+<https://nickdesaulniers.github.io/blog/2023/03/10/disambiguating-arm/>`_ goes
+into lots more detail.
 
 ``x86_64``, ``amd64``: These are synonyms for the original Intel/AMD
 architecture.
