@@ -144,7 +144,7 @@ system consists of the components illustrated in the diagram below.
 
 **Legend** (starting from the bottom):
 
-:circlednumber:`①` Over 1400 contributors who add,
+:circlednumber:`①` Over 1800 contributors who add,
 modify, update, and maintain recipes and packages
 
 .. details:: Details
@@ -294,7 +294,7 @@ Team
 ~~~~
 
 Bioconda would not exist without the continuous hard work and support of the
-wonderful community which includes over 1400 (as of 2022) `contributors
+wonderful community which includes over 1800 (as of 2023) `contributors
 <https://github.com/bioconda/bioconda-recipes/graphs/contributors>`_.
 
 
