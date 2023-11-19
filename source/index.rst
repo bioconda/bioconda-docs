@@ -187,9 +187,9 @@ package and a Docker container
     the process repeats until all tests pass.
 
     Our `build system`_, `bioconda-utils`, orchestrates the various building
-    and testing steps on Azure Pipelines. The output consists of both a `conda
-    package`_ and a `Biocontainer`_ that can be inspected before merging the
-    pull request.
+    and testing steps on CI infrastructure like CircleCI, Azure Pipelines, and
+    GitHub Actions. The output consists of both a `conda package`_ and
+    a `Biocontainer`_ that can be inspected before merging the pull request.
 
 
 :circlednumber:`④` A repository of packages and a registry of containers
