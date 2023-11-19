@@ -68,8 +68,8 @@ orchestrated by bioconda-utils.
 
 - **Isolated test.** Upon successfully building and testing via
   ``conda-build``, the built package is added to a minimal BusyBox container
-  using ``mulled-build`` (maintained in `galaxy-lib
-  <https://github.com/galaxyproject/galaxy-lib>`_). This acts as a more
+  using ``mulled-build`` (maintained in `galaxy-tool-util
+  <https://docs.galaxyproject.org/en/latest/admin/special_topics/mulled_containers.html#automatic-build-of-linux-containers>`_). This acts as a more
   stringent test than ``conda-build`` alone, because the BusyBox container
   purposefully is missing many system libraries (like libgcc) that may be
   present in the CentOS 7 container. Note that it is common for a package to
