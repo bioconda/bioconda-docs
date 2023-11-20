@@ -550,7 +550,7 @@ proprietary reduced instruction set. RISC-V is an open (non-proprietary)
 reduced instruction set.
 
 **Arm vs ARM:** Arm is the company that licenses the proprietary instruction
-set For example, they license it to Apple to run on their M-series chips. ARM
+set. For example, they license it to Apple to run on their M-series chips. ARM
 (in all caps) refers to the family of RISC instruction sets, and by extension
 chips that use the instruction sets. It is also an acronym for Advanced RISC
 Machines and the eariler Acorn RISC Machine). This `blog post
