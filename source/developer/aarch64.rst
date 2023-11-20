@@ -23,3 +23,6 @@ building on ``linux-aarch64`` by adding the following to the
 The current CircleCI config will only run if at least one recipe in the
 commit range (typically for the PR) includes the above additional
 platform.
+
+Support for building and uploading containers for ``linux-aarch64`` is planned
+but not yet implemented (Nov 2023).
