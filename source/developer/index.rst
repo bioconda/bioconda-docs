@@ -9,4 +9,5 @@ Developer Docs
     bulk
     repodata_patching
     ci-inventory
+    repo-inventory
     aarch64
