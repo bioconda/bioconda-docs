@@ -106,7 +106,7 @@ as described below.
 Modifying gen_patch_json.py
 ---------------------------
 
-We will be working in the `bioconda-repodate-patches recipe
+We will be working in the `bioconda-repodata-patches recipe
 <https://github.com/bioconda/bioconda-recipes/tree/master/recipes/bioconda-repodata-patches>`_.
 
 The `gen_patch_json.py` file is borrowed from conda-forge and has one function
