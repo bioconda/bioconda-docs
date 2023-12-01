@@ -553,7 +553,7 @@ reduced instruction set.
 set. For example, they license it to Apple to run on their M-series chips. ARM
 (in all caps) refers to the family of RISC instruction sets, and by extension
 chips that use the instruction sets. It is also an acronym for Advanced RISC
-Machines and the eariler Acorn RISC Machine). This `blog post
+Machines and the eariler Acorn RISC Machine. This `blog post
 <https://nickdesaulniers.github.io/blog/2023/03/10/disambiguating-arm/>`_ goes
 into lots more detail.
 
