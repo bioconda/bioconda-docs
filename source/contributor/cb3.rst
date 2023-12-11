@@ -206,7 +206,7 @@ is used as a build dependency, it should also be automatically be installed as
 a run dependency without having to explicitly add it as such in the recipe.
 This specification is done in the ``zlib`` recipe itself (which is hosted by
 conda-forge), so in general bioconda collaborators can just add ``zlib`` as
-a build dependency.
+a host dependency.
 
 Note that we don't have to specify the version of ``zlib`` in the recipe -- it
 is pinned in that ``conda_build_config.yaml`` file we share with conda-forge.
@@ -248,7 +248,6 @@ After:
         - zlib
       run:
         - python
-        - zlib
 
 
 .. seealso::
