@@ -58,7 +58,7 @@ orchestrated by bioconda-utils.
 
 - **Lint.** This step checks for common errors, formatting, and consistency.
 
-- **Build recipes.** Recipes to be built sastify the following criteria:
+- **Build recipes.** Recipes to be built satisfy the following criteria:
     - changed in this pull request
     - not on the `build-fail-blacklist`
     - does not have a build-failure yaml file in the recipe with a hash
