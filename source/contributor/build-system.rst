@@ -1,8 +1,8 @@
 Build system
 ============
 
-.. datechanged:: 2023-11-14
-   Made descriptions more generalized to reflect multiple CI systems in use
+.. datechanged:: 2024-03-02
+   Generalized descriptions to reflect multiple CI systems in use
 
 The build system for Bioconda takes recipes and converts them into conda
 packages that are uploaded to anaconda.org as well as Docker containers that

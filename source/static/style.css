@@ -226,3 +226,10 @@ code.xref {
     font-size: 0.9em;
 }
 
+/* add more space to lists */
+ol.simple p {
+    margin-bottom: 1em;
+}
+ul.simple p {
+    margin-bottom: 1em;
+}

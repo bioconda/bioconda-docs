@@ -9,7 +9,7 @@ CI Inventory
 .. datechanged:: 2023-06-06
    Start using build-failures workflow
 
-.. datechanged:: 2023-11-18
+.. datechanged:: 2024-03-02
    Start using ``linux-aarch64`` in bulk and recipe tests
 
 This page documents the various moving parts that, together, make Bioconda

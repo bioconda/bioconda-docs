@@ -21,7 +21,7 @@ Repository inventory
     - Centralized location for installation/config
 
   * - `bioconda-containers <https://github.com/bioconda/bioconda-containers>`_
-    - Dockerfiles and CI config for building :ref:`bioconda containers <dockerfile-inventory>`_
+    - Dockerfiles and CI config for building :ref:`bioconda containers <dockerfile-inventory>`
 
   * - `bioconda.github.io <https://github.com/bioconda/bioconda.github.io>`_
     - Docs built by bioconda-docs are pushed here for hosting by GitHub
