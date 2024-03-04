@@ -3,7 +3,7 @@
 Dockerfile inventory
 ====================
 
-.. datechanged:: 2024-03-02
+.. datechanged:: 2024-03-04
    Added section
 
 Containers are used in multiple ways by bioconda-utils. Broadly, we can

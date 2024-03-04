@@ -530,7 +530,7 @@ build.
 Understanding platform nomenclature
 -----------------------------------
 
-.. datechanged:: 2024-03-02
+.. datechanged:: 2024-03-04
    Added section
 
 Different CPU chips use different architecture, so programs are written
