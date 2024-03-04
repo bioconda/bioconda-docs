@@ -1,16 +1,38 @@
+.. _dockerfile-inventory:
+
 Dockerfile inventory
 ====================
 
-Docker containers are used in multiple ways by bioconda-utils. Broadly, we can
-divide them into containers used for *building* packages and containers used
-for the bot.
+.. datechanged:: 2024-03-02
+   Added section
+
+Containers are used in multiple ways by bioconda-utils. Broadly, we can
+divide them into containers used for *building* packages, containers for
+*running* packages, and containers used for the bot.
+
+.. details:: Containers vs images
+
+    An image is like a static snapshot, while a container is a running instance
+    of an image. A single image can be used to start multiple containers. Changes
+    made to a container are not saved back to the original image used to start the
+    container, but it is possible to make a *new* image from the latest state
+    of a container . . . which can later be used image to start yet more
+    containers that start from that latest state.
+
+.. details:: Docker, podman, buildah, OCI
+
+  Open Container Initiative (OCI) specification defines the format of images.
+  Buildah is a tool for creating OCI images, and podman is a tool for running
+  them. Docker is a tool for both creating OCI images and running containers
+  made from them.
+
 
 Overview of containers used in building
 ---------------------------------------
 
-Bioconda builds not only conda packages but also Docker containers with the
-package installed. Here's how it works.
-
+For every recipe, Bioconda builds not only conda packages for mulitple
+architectures like osx, linux/amd64, linux/arm64, but also OCI images
+(linux/amd64, linux/arm64) with the package installed. Here's how it works.
 
 .. figure:: ../images/bioconda-containers.png
 
@@ -19,55 +41,80 @@ package installed. Here's how it works.
    <../images/bioconda-containers.excalidraw>`] [:download:`SVG
    <../images/bioconda-containers.svg>`]
 
-If we run :command:`bioconda-utils build` without the :command:`--docker`
-argument, it will build a conda package using the conda-build in the local
-environment and the built package will appear in the host's :file:`conda-bld`
-directory, ready for uploading to the channel.
+**Description of steps:**
 
-However, the host may have libraries or packages installed that are not defined
-in the recipe. If a package uses any of these, then even if tests pass on this
-host they may fail on another machine that is missing those undeclared
-dependencies, resulting in a broken package. Since we use multiple CI providers
-(CircleCI, GitHub Actions, Azure DevOps), and since any one of these providers
-may install or update libraries on their hosts at any time, there is a risk of
-creating packages that work when building but are broken on other systems.
+These steps are all coordinated with running :command:`bioconda-utils build
+pkgname` in the bioconda-recipes repo.
 
-To guard against this, we run :command:`bioconda-utils build` with the
-:command:`--docker` argument. This runs conda-build inside a Docker container,
-isolating it from the host and preventing any host libraries from being used.
-As before, the resulting package is found in the host's :file:`conda-bld`
-directory.
+
+1. Recipe on the host is mounted as a volume in the build container.
+   The host's conda-bld directory is also mounted in the container. We call this
+   the *build-env* container.
+2. The build-env container uses conda-build to build a conda package from the
+   mounted recipe.
+3. The newly-built conda package is saved in the conda-bld directory mounted from the
+   host. The build-env container exits.
+4. The new conda package is mounted into a minimal container that has
+   conda installed (but *not* conda-build or bioconda-utils or any other
+   dependencies). This is the *create-env* container.
+5. The package is installed (with :command:`conda install`) into create-env's
+   conda environment. This of course includes all dependencies specified in the recipe.
+   The recipe's test commands are also extracted.
+6. Only the contents of the :file:`env/` directory in the *create-env*
+   container are copied over into the :file:`/usr/local` dir of a minimal *base
+   container* (which does not even include conda). The extracted tests are run
+   in the container as a final check (see notes below on
+   :command:`--mulled-test`), and then the container is ready to upload to
+   a container registry.
+
+Why do we do it this way? The short answer is to ensure that all dependencies
+are accurately captured in the recipe.
+
+More details on this rationale:
+
+We build on multiple CI providers (CircleCI, GitHub Actions, Azure DevOps). Any
+one of these providers may install or update libraries on their hosts at any
+time. If we didn't use containers for isolation when building packages,
+a package could silently depend on those system libraries when building. While
+the build might work on CI that already has those libraries, it will be broken
+on ar machine without those libraries.
+
+So :command:`bioconda-utils build --docker` runs conda-build inside a Docker
+container, isolating it from the host and preventing any host libraries from
+being used. As with a normal :command:`conda build` command, the resulting
+package is found in the host's :file:`conda-bld` directory. This is illustrated
+in steps 1-3 above.
 
 When we additionally use the :command:`--mulled-test` argument,
 :program:`bioconda-utils` will run :program:`mulled-build` from the `galaxy-lib
 <https://galaxy-lib.readthedocs.io/en/latest/topics/mulled.html>`_ package.
 :program:`mulled-build` is a tool to convert conda packages into Docker images.
 It uses `involucro <https://github.com/involucro/involucro>`_ to make a final,
-minimal image with a dramatically reduced file size.
-
-This process uses two images: an image containing conda, and a minimal base
-image. First, a container with conda installed is used to :command:`conda
-install` the package built in the previous step into the container. This
-installs the package's dependencies as well. The test commands are extracted
-from the package, and run to test this newly-installed package. Next, *just the
-conda environment directory* is extracted from the conda container and layered
-onto the base image using :program:`involucro`.
+minimal image with a dramatically reduced file size. This is illustrated in
+steps 4-6 above.
 
 The base image has very little else, not even conda. So the end result is
-a minimal Docker image with nothing but the installed package and its
-dependencies (and therefore a small size), ready to be uploaded to
+a fully-isolated, minimal Docker image with nothing but the installed package
+and its dependencies (and therefore a small size), ready to be uploaded to
 a repository.
 
+Note that :command:`--mulled-test` runs the tests extracted from the recipe in
+the minimal container. Since the container only contains the package and its
+dependencies, any tests must use only these. Even if the recipe specifies
+additional test dependencies or additional test data (which is supported by
+standard conda-build), these are not copied over to the final image and tests
+with additional dependencies will therefore fail.
 
 Details of containers using in building
 ---------------------------------------
 
-The **build image** is used for *building* a package, isolated from the host.
-The built package appears back on the host's local channel.
+The **build-env image** is used for *building* a package in a manner that is
+isolated from the host. The built package appears back on the host's local
+channel.
 
-The **conda image** is used by mulled-build for *installing* the conda package
-in such a way that the resulting conda env can be easily copied out by
-involucro
+The **create-env image** is used by mulled-build for creating a conda
+environment with the package and dependencies installed in such a way that the
+resulting conda env can be easily copied out by involucro.
 
 The **base image** is used by involucro as a starting image into which it will
 copy the conda env created by mulled-build in the conda image
@@ -77,7 +124,16 @@ is *too* minimal. In this case, recipe authors can specify
 ``container:extended-base:true`` in the meta.yaml file, and the extended image
 will be used as the base instead.
 
-Here are the images, their respective Dockerfiles, and where they are built.
+Here are the images, their respective Dockerfiles, and their quay.io repository
+names. All images are built in the `bioconda-utils build-images GitHub Action
+workflow
+<https://github.com/bioconda/bioconda-utils/blob/master/.github/workflows/build-images.yml>`_.
+
+The base image and extended base image have major.minor.patch versions (e.g.,
+``1.2.3``) as their tags. The build-env image and the create-env image have
+both the bioconda-utils version as well as the base image version (e.g.,
+``2.11.1-base1.2.3``). This is because the images loosely depend on each other
+for things like locale, and exact version of conda/mamba.
 
 .. list-table::
   :header-rows: 1
@@ -150,7 +206,7 @@ created by package builds. In order to have rapid response times, the bot is
 implemented as a set of tagged Docker containers.
 
 The bot actions largely consist of relatively simple HTTP requests. The code
-for these actions if maintained in the `src/bioconda_bot
+for these actions is maintained in the `src/bioconda_bot
 <https://github.com/bioconda/bioconda-containers/tree/main/images/bot/src/bioconda_bot>`_
 Python package, within the bioconda-containers repo. There are different tagged
 images for the different behaviors of the bot, which are built and pushed in
