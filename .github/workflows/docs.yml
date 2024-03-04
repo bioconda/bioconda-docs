@@ -67,7 +67,7 @@ jobs:
         conda activate bioconda
         make clean html SPHINXOPTS="-T -j1"
         touch build/html/.nojekyll
-        tar -cf docs.tar
+        tar -cf docs.tar build/html
 
     # Upload the built docs as an artifact for inspection (even on PRs). This
     # will show up in the Actions web interface.
