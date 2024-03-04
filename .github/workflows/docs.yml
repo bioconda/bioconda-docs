@@ -67,6 +67,7 @@ jobs:
         conda activate bioconda
         make clean html SPHINXOPTS="-T -j1"
         touch build/html/.nojekyll
+        tar -cf docs.tar
 
     # Upload the built docs as an artifact for inspection (even on PRs). This
     # will show up in the Actions web interface.
@@ -74,7 +75,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: doc
-        path: build/html
+        path: docs.tar
 
     # Start the SSH agent so that subsequent steps don't need additional SSH
     # setup. The private key has been added as a secret to this repo (the one
