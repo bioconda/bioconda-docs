@@ -71,7 +71,7 @@ maintain flexibility over the long term in case a service becomes unusable.
       - on push
       - `azure-pipeline.yml <https://github.com/bioconda/bioconda-recipes/blob/master/azure-pipeline.yml>`_ (``linux-64``, ``osx-64``);
         `config.yml <https://github.com/bioconda/bioconda-recipes/blob/master/.circleci/config.yml>`_ (``linux-aarch64``)
-      - ``linux-64``, ``osx-64``
+      - ``linux-64``, ``osx-64``, ``linux-aarch``
       - These are the most-run tests: these are what run on every change on
         pull requests to bioconda-recipes, and they must pass before the recipe
         is merged into the master branch.
@@ -114,7 +114,7 @@ maintain flexibility over the long term in case a service becomes unusable.
       - CircleCI
       - ``bioconda-utils``
       - hourly
-      - `config.yml <https://github.com/bioconda/bioconda-utils/blob/master/.circleci/config.yml#L65>`_
+      - `config.yml <https://github.com/bioconda/bioconda-utils/blob/8255afdd9e5c0fd3cb09cb11269f5ff3397c959e/.circleci/config.yml#L69>`_
       - Linux
       - Checks upstream repository for version updates, if so, creates a new
         bioconda-recipes recipe with the updated version and an updated hash,

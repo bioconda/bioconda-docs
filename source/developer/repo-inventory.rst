@@ -27,7 +27,7 @@ Repository inventory
     - Docs built by bioconda-docs are pushed here for hosting by GitHub
 
   * - `bioconda-stats <https://github.com/bioconda/bioconda-stats>`_
-    - Gathers and stores statistics from the conda channel
+    - Gathers and stores statistics from the bioconda channel
 
   * - `bioconda-plots <https://github.com/bioconda/bioconda-plots>`_
     - Converts data from bioconda-stats into plots used by the docs

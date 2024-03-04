@@ -386,11 +386,11 @@ What's the lifecycle of a bioconda package?
 -------------------------------------------
 
 - Submit a pull request with a new recipe or an updated recipe
-- Circle CI automatically builds and tests the changed recipe[s] using
-  conda-build. Test results are shown on the PR.
+- CI (see :ref:`ci-inventory`) automatically builds and tests the changed
+  recipe[s] using conda-build. Test results are shown on the PR.
 - If tests fail, push changes to PR until they pass.
 - Once tests pass, merge into master branch
-- Circle CI tests again, but this time after testing the built packages are
+- CI tests again, but this time after testing the built packages are
   uploaded to the bioconda channel on anaconda.org.
 - Users can now install the package just like any other conda package with
   ``conda install``.
@@ -541,7 +541,7 @@ There is a lot of confusing nomenclature surrounding them. Here is an attempt
 at clearing them up, or at least providing enough context that you can look up
 more details on your own:
 
-**instruction set, CISC, RISC, RISC-V**: The *instruction set* is the assembly
+**ISA, instruction set, CISC, RISC, RISC-V**: The *instruction set* is the assembly
 code commands that are possible for the chip. *CISC* is "complex instruction
 set computer" which prioritizes flexibility. *RISC* is "reduced instruction set
 computer" which prioritizing power consumption (this is an oversimplification,

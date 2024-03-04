@@ -93,10 +93,10 @@ It uses `involucro <https://github.com/involucro/involucro>`_ to make a final,
 minimal image with a dramatically reduced file size. This is illustrated in
 steps 4-6 above.
 
-The base image has very little else, not even conda. So the end result is
-a fully-isolated, minimal Docker image with nothing but the installed package
-and its dependencies (and therefore a small size), ready to be uploaded to
-a repository.
+The base image has very few packages or libraries installed -- not even conda.
+So the end result is a fully-isolated, minimal Docker image with nothing but
+the installed package and its dependencies (and therefore a small size), ready
+to be uploaded to a repository.
 
 Note that :command:`--mulled-test` runs the tests extracted from the recipe in
 the minimal container. Since the container only contains the package and its
