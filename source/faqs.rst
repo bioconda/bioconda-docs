@@ -100,6 +100,7 @@ depend on other Bioconda packages with architecture specific builds, such as
 .. datechanged:: 2022-09-01
    Python 3.10 support started in Aug 2022
 
+
 .. datechanged:: 2023-05-01
    Python 2.7, 3.6, 3.7 support were dropped for new recipes in May 2023.
 
