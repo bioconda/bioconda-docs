@@ -30,6 +30,7 @@ jobs:
     - name: Install docs requirements
       run: |
         source common.sh
+        conda activate bioconda
         conda install -y --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements-docs.txt
 
     # This script can be used to reconfigure conda to use the right channel setup.
