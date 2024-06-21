@@ -30,6 +30,7 @@ jobs:
     - name: Install docs requirements
       run: |
         source common.sh
+        eval "$(conda shell.bash hook)"
         conda activate bioconda
         conda install -y --file https://raw.githubusercontent.com/bioconda/bioconda-utils/$BIOCONDA_UTILS_TAG/bioconda_utils/bioconda_utils-requirements-docs.txt
 
@@ -57,9 +58,7 @@ jobs:
 
     - name: build docs
       run: |
-        eval "$(conda shell.bash hook)"
         export BIOCONDA_FILTER_RECIPES=${{env.BIOCONDA_FILTER_RECIPES}}
-        conda activate bioconda
         make clean html SPHINXOPTS="-T -j1"
         touch build/html/.nojekyll
         tar -cf docs.tar build/html
