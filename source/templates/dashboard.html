@@ -2,10 +2,9 @@
 <div style="width: 100%" id="package_plot"></div>
 
 <script>
-  window.onload = function () {
-    // Download download plot data
-    $.get("https://raw.githubusercontent.com/bioconda/bioconda-stats/data/package-downloads/anaconda.org/bioconda/channel.tsv", function (bioconda_data) {
+  window.onload = async function () {
 
+    function buildDownloadsPlot(bioconda_data) {
       let spec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "description": "Total bioconda downloads.",
@@ -52,11 +51,18 @@
       };
 
       vegaEmbed('#download_plot', spec);
-    });
+    }
 
     // Download download plot data
-    $.get("https://raw.githubusercontent.com/bioconda/bioconda-stats/data/package-downloads/anaconda.org/bioconda/packages.tsv", function (package_data) {
+    try {
+      const bioconda_resp = await fetch("https://raw.githubusercontent.com/bioconda/bioconda-stats/data/package-downloads/anaconda.org/bioconda/channel.tsv")
+      const bioconda_data = await bioconda_resp.text();
+      buildDownloadsPlot(bioconda_data);
+    } catch (err) {
+      console.error(err)
+    }
 
+    function buildTopPackagesPlot(package_data) {
       let package_spec = {
         "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
         "description": "Top downloaded packages.",
@@ -85,6 +91,17 @@
       };
 
       vegaEmbed('#package_plot', package_spec);
-    });
+    };
+
+
+    // Download package plot data
+    try {
+      const package_resp = await fetch("https://raw.githubusercontent.com/bioconda/bioconda-stats/data/package-downloads/anaconda.org/bioconda/packages.tsv")
+      const package_data = await package_resp.text();
+      buildTopPackagesPlot(package_data);
+    } catch (err) {
+      console.error(err)
+    }
+
   }
 </script>
