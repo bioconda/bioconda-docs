@@ -15,7 +15,7 @@ jobs:
   build-and-test:
     runs-on: "ubuntu-latest"
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: set path
       run: echo "/opt/mambaforge/bin" >> $GITHUB_PATH
@@ -26,7 +26,7 @@ jobs:
 
     - name: Restore cache
       id: cache
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: /opt/mambaforge
         key: ${{ runner.os }}--bulk--${{ hashFiles('install-and-set-up-conda.sh', 'common.sh', 'configure-conda.sh') }}
@@ -74,7 +74,7 @@ jobs:
     # Upload the built docs as an artifact for inspection (even on PRs). This
     # will show up in the Actions web interface.
     - name: push artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: doc
         path: docs.tar
