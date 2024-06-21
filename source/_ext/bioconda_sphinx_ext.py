@@ -37,7 +37,7 @@ from sphinx.directives import ObjectDescription
 from sphinx.environment import BuildEnvironment
 from sphinx.roles import XRefRole
 from sphinx.util import logging as sphinx_logging
-from sphinx.util import status_iterator
+from sphinx.util.display import status_iterator
 from sphinx.util.docfields import Field, GroupedField
 from sphinx.util.nodes import make_refnode
 from sphinx.util.parallel import ParallelTasks, parallel_available, make_chunks
