@@ -8,17 +8,17 @@
         try {
             const cdf_spec_resp = await fetch("https://raw.githubusercontent.com/bioconda/bioconda-plots/main/resources/cdf.vl.json")
             if (!cdf_spec_resp.ok) {
-                throw new Error(`Fectching failed with HTTP code ${cdf_spec_resp.status}.`);
+                throw new Error(`Fetching failed with HTTP code ${cdf_spec_resp.status}.`);
             }
             const cdf_spec = await cdf_spec_resp.json();
             const cdf_data_resp = await fetch("https://raw.githubusercontent.com/bioconda/bioconda-plots/main/plots/cdf.json")
             if (!cdf_data_resp.ok) {
-                throw new Error(`Fectching failed with HTTP code ${cdf_data_resp.status}.`);
+                throw new Error(`Fetching failed with HTTP code ${cdf_data_resp.status}.`);
             }
             const cdf_plot_data = await cdf_data_resp.json();
             const point_data_resp = await fetch(`https://raw.githubusercontent.com/bioconda/bioconda-plots/main/plots/${package}/cdf.json`)
             if (!point_data_resp.ok) {
-                throw new Error(`Fectching failed with HTTP code ${point_data_resp.status}.`);
+                throw new Error(`Fetching failed with HTTP code ${point_data_resp.status}.`);
             }
             const single_point = await point_data_resp.json();
   
@@ -33,12 +33,12 @@
         try {
             const spec_resp = await fetch("https://raw.githubusercontent.com/bioconda/bioconda-plots/main/resources/versions.vl.json")
             if (!spec_resp.ok) {
-                throw new Error(`Fectching failed with HTTP code ${spec_resp.status}.`);
+                throw new Error(`Fetching failed with HTTP code ${spec_resp.status}.`);
             }
             const spec = await spec_resp.json();
             const version_data_resp = await fetch(`https://raw.githubusercontent.com/bioconda/bioconda-plots/main/plots/${package}/versions.json`)
             if (!version_data_resp.ok) {
-                throw new Error(`Fectching failed with HTTP code ${version_data_resp.status}.`);
+                throw new Error(`Fetching failed with HTTP code ${version_data_resp.status}.`);
             }
             const plot_data = await version_data_resp.json();
             spec.data.values = plot_data;

@@ -57,7 +57,7 @@
     try {
       const bioconda_resp = await fetch("https://raw.githubusercontent.com/bioconda/bioconda-stats/data/package-downloads/anaconda.org/bioconda/channel.tsv")
       if (!bioconda_resp.ok) {
-        throw new Error(`Fectching failed with HTTP code ${bioconda_resp.status}.`);
+        throw new Error(`Fetching failed with HTTP code ${bioconda_resp.status}.`);
       }
       const bioconda_data = await bioconda_resp.text();
       buildDownloadsPlot(bioconda_data);
@@ -101,7 +101,7 @@
     try {
       const package_resp = await fetch("https://raw.githubusercontent.com/bioconda/bioconda-stats/data/package-downloads/anaconda.org/bioconda/packages.tsv")
       if (!package_resp.ok) {
-        throw new Error(`Fectching failed with HTTP code ${package_resp.status}.`);
+        throw new Error(`Fetching failed with HTTP code ${package_resp.status}.`);
       }
         const package_data = await package_resp.text();
         buildTopPackagesPlot(package_data);
