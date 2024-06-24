@@ -308,14 +308,14 @@ intersphinx_mapping = {
 
 # We are using the `extlinks` extension to render links for identifiers:
 extlinks = {
-    "biotools": ("https://bio.tools/%s", ""),
-    "doi": ("https://doi.org/%s", ""),
-    "debian": ("https://tracker.debian.org/pkg/%s", ""),
-    "pmid": ("https://www.ncbi.nlm.nih.gov/pubmed/%s", ""),
-    "rrid": ("https://scicrunch.org/resolver/%s", ""),
-    "usegalaxy-eu": ("https://usegalaxy.eu/?tool_id=%s", ""),
-    "usegalaxy-org": ("https://usegalaxy.org/?tool_id=%s", ""),
-    "usegalaxy-org.au": ("https://usegalaxy.org.au/?tool_id=%s", ""),
+    "biotools": ("https://bio.tools/%s", "%s"),
+    "doi": ("https://doi.org/%s", "%s"),
+    "debian": ("https://tracker.debian.org/pkg/%s", "%s"),
+    "pmid": ("https://www.ncbi.nlm.nih.gov/pubmed/%s", "%s"),
+    "rrid": ("https://scicrunch.org/resolver/%s", "%s"),
+    "usegalaxy-eu": ("https://usegalaxy.eu/?tool_id=%s", "%s"),
+    "usegalaxy-org": ("https://usegalaxy.org/?tool_id=%s", "%s"),
+    "usegalaxy-org.au": ("https://usegalaxy.org.au/?tool_id=%s", "%s"),
 }
 
 # add document name before automatic section title reference
