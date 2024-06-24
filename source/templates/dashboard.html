@@ -56,10 +56,13 @@
     // Download download plot data
     try {
       const bioconda_resp = await fetch("https://raw.githubusercontent.com/bioconda/bioconda-stats/data/package-downloads/anaconda.org/bioconda/channel.tsv")
+      if (!bioconda_resp.ok) {
+        throw new Error(`Fectching failed with HTTP code ${bioconda_resp.status}.`);
+      }
       const bioconda_data = await bioconda_resp.text();
       buildDownloadsPlot(bioconda_data);
     } catch (err) {
-      console.error(err)
+      console.error("An error occurred while building channel downloads plot: ", err)
     }
 
     function buildTopPackagesPlot(package_data) {
@@ -97,10 +100,13 @@
     // Download package plot data
     try {
       const package_resp = await fetch("https://raw.githubusercontent.com/bioconda/bioconda-stats/data/package-downloads/anaconda.org/bioconda/packages.tsv")
-      const package_data = await package_resp.text();
-      buildTopPackagesPlot(package_data);
+      if (!package_resp.ok) {
+        throw new Error(`Fectching failed with HTTP code ${package_resp.status}.`);
+      }
+        const package_data = await package_resp.text();
+        buildTopPackagesPlot(package_data);
     } catch (err) {
-      console.error(err)
+      console.error("An error occurred while building top packages plot: ", err)
     }
 
   }
