@@ -96,9 +96,9 @@ maintain flexibility over the long term in case a service becomes unusable.
       - Azure Pipelines, CircleCI
       - ``bioconda-recipes``
       - push to master (bioconda-recipes)
-      - `azure-pipeline-master.yml <https://github.com/bioconda/bioconda-recipes/blob/master/azure-pipeline-master.yml>`;
+      - `azure-pipeline-master.yml <https://github.com/bioconda/bioconda-recipes/blob/master/azure-pipeline-master.yml>`_ (``linux-64``, ``osx-64``);
         `config.yml <https://github.com/bioconda/bioconda-recipes/blob/master/.circleci/config.yml>`_ (``linux-aarch64``, ``osx-arm64``)
-      - ``linux-64``, ``osx-64``, ``linux-aarch64``, ``osx-arm64`
+      - ``linux-64``, ``osx-64``, ``linux-aarch64``, ``osx-arm64``
       - Runs when a PR is merged to the master branch. The already-built artifacts are retrieved from the PR and uploaded to the ``bioconda`` channel.
         Container(s) are uploaded to quay.io/biocontainers.
         If artifacts are not found, it will build the recipe(s) as a fallback.
