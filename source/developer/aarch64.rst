@@ -1,4 +1,4 @@
-``aarch64`` and ``arm64``` builds
+``aarch64`` and ``arm64`` builds
 ==================
 
 .. datechanged:: 2024-03-04
