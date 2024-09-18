@@ -365,7 +365,7 @@ Otherwise, in our Bioconda-build conda environment, we can run one of two option
 
 
 Hopefully, if everything worked correctly the first time, we should have a successful build and we can proceed with submitting to bioconda.
-If something goes wrong, see [part 3 of this guide](debugging-bioconda-build-quickguide) on debugging the Bioconda builds.
+If something goes wrong, see :doc:`/tutorials/2024-debugging-bioinformatic-software-to-bioconda` on debugging the Bioconda builds.
 
 Regardless, in both local build approaches, these commands will dump a huge amount of output to the terminal, and if it fails, we'll have to trawl through it to debug it.
 
@@ -398,7 +398,7 @@ On the Azure website we should see a series of 'stages', that run in order. The 
 3. `test_osx`: that the recipe builds on a macOS system (i.e., doesn't error and the test command completes).
 
 A given stage has a completed (green tick), running (blue spinny icon), or failed (red cross) status.
-If we click on any of the stages, we should see log files that similar or identical what we would do if we were [building locally](#debugging-recipe-building) (see that section for debugging advice, if we skipped local building).
+If we click on any of the stages, we should see log files that similar or identical what we would do if we were building locally (see the tutorial :doc:`/tutorials/2024-debugging-bioinformatic-software-to-bioconda` for debugging advice, if we skipped local building).
 
 ![Screenshot of bottom of a GitHub PR with the checks list displayed with blue 'Details' links next to each test.]({% link assets/images/2024-08-14-bioconda-guide/bioconda-guide-githubchecks.png %})
 
@@ -408,7 +408,7 @@ If we click on any of the stages, we should see log files that similar or identi
 
 *Screenshot of the Microsoft Azure interface with the three (successful) Bioconda CI stages.*
 
-If you get errors or something goes wrong, see [part 3 of this guide](debugging-bioconda-build-quickguide) on how to locally debug the Bioconda build.
+If you get errors or something goes wrong, see :doc:`/tutorials/2024-debugging-bioinformatic-software-to-bioconda` on how to locally debug the Bioconda build.
 
 Test driving the docker Biocontainer (optional)
 ===============================================
@@ -430,7 +430,7 @@ The image will be named something like `quay.io/biocontainers/<toolname>`, and I
 
 This should dump us within a shell in the container so we can test commands etc. as we would with any other Docker container.
 
-If something goes wrong here and you encounter issues with the build within the container, you can see [part 3 of this guide](debugging-bioconda-build-quickguide) to get tips and tricks how to manually re-build the recipe step-by-step.
+If something goes wrong here and you encounter issues with the build within the container, you can see :doc:`/tutorials/2024-debugging-bioinformatic-software-to-bioconda` to get tips and tricks how to manually re-build the recipe step-by-step.
 Otherwise, if you're happy you can continue to finalise the PR in the next section.
 
 Finalising the PR
@@ -448,10 +448,10 @@ For the Singularity version of the Docker container, this can take up to 24h bef
 Conclusion
 **********
 
-This part one of this guide hopefully has given you enough pointers on the steps required to *make* a recipe and submit your tool/package to Bioconda.
+This guide hopefully has given you enough pointers on the steps required to *make* a recipe and submit your tool/package to Bioconda.
 
-In the [second part](updating-bioconda-recipe-quickguide) of this guide, we will go through how to update an existing recipe.
-In the [third part](debugging-bioconda-build-quickguide), we will go through how to manually debug the build process if things go wrong.
+- To go through how to update an existing recipe, see the tutorial :doc:`/tutorials/2024-updating-bioinformatic-software-to-bioconda`.
+- To go through how to manually debug the build process if things go wrong, see the tutorial :doc:`/tutorials/2024-debugging-bioinformatic-software-to-bioconda`.
 
 As with all bioinformatics and software development in general, things rarely just 'work' straight out of the box.
 My three biggest points of advice:
