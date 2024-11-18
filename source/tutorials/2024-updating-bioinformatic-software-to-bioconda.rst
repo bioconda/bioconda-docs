@@ -41,8 +41,8 @@ understand the basics of adding a new tool to Bioconda.
    - Bioconda configured as a source channel (see `bioconda documentation <https://bioconda.github.io/#usage>`_)
    - The following conda packages:
 
-     - ``conda-utils``
-     - ``bioconda-build``
+     - ``conda-build``
+     - ``bioconda-utils``
      - ``greyskull`` (optional: for Python software on pypi or R packages on CRAN)
 
      I typically dump all of the above in a specific conda environment, generated with the following command:
