@@ -34,7 +34,7 @@ TL;DR Relevant Commands
     ## Make recipe meta.yaml
     ## Option 1: If using Greyskull
     cd recipes/
-    greyskull <pypi/cran> > <toolname>/meta.yaml
+    greyskull <pypi/cran> <toolname>
 
     ## Option 2: If not using Greyskull
     mkdir recipes/<toolname>
@@ -121,6 +121,7 @@ Writing the recipe
 
 A Bioconda recipe at a minimum can consist of a single file called ``meta.yaml``.
 This is often sufficient for PyPi Python and many R packages (respectively).
+For more information, the `conda-forge <https://conda-forge.org>`_ project has `very nice description <https://conda-forge.org/docs/maintainer/adding_pkgs/#the-recipe-metayaml>`_ of what each section of a ``meta.yaml`` does.
 
 1. Create a new git branch for the tool we wish to add within the forked and cloned ``bioconda-recipes`` repository:
 
