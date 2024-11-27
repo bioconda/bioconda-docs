@@ -53,13 +53,14 @@ from bioconda_utils.recipe import Recipe, RecipeError
 from bioconda_utils.githandler import BiocondaRepo
 from bioconda_utils.lint import get_checks
 
-# Aquire a logger
+# Acquire a logger
 try:
     logger = sphinx_logging.getLogger(__name__)  # pylint: disable=invalid-name
 except AttributeError:  # not running within sphinx
     import logging
     logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
+recipe_additional_platforms = {};
 
 def as_extlink_filter(text):
     """Jinja2 filter converting identifier (list) to extlink format
@@ -331,7 +332,7 @@ class CondaObjectDescription(ObjectDescription):
                         "Duplicate entry {} {} at {} (other in {})".format(
                             self.objtype, name, self.lineno,
                             self.env.doc2path(objects[key][0])))
-            objects[key] = (self.env.docname, target_name)
+            objects[key] = (self.env.docname, target_name, recipe_additional_platforms[name])
 
         index_text = self.get_index_text(name)
         if index_text:
@@ -396,7 +397,7 @@ class PackageIndex(Index):
         content = {}
 
         objects = sorted(self.domain.data['objects'].items())
-        for (typ, name), (docname, labelid) in objects:
+        for (typ, name), (docname, labelid, description) in objects:
             if docnames and docname not in docnames:
                 continue
             entries = content.setdefault(name[0].lower(), [])
@@ -405,7 +406,7 @@ class PackageIndex(Index):
                 # TODO: Add meaningful info for extra/qualifier/description
                 #       fields, e.g., latest package version.
                 # name, subtype, docname, labelid, 'extra', 'qualifier', 'description',
-                name, subtype, docname, labelid, '', '', '',
+                name, subtype, docname, labelid, '', '', description,
             ))
 
         collapse = True
@@ -443,7 +444,7 @@ class CondaDomain(Domain):
         if 'objects' not in self.data:
             return
         to_remove = [
-            key for (key, (stored_docname, _)) in self.data['objects'].items()
+            key for (key, (stored_docname, _, _)) in self.data['objects'].items()
             if docname == stored_docname
         ]
         for key  in to_remove:
@@ -497,7 +498,7 @@ class CondaDomain(Domain):
           - 2: object is unimportant (placed after full-text matches)
           - -1: object should not show up in search at all
         """
-        for (typ, name), (docname, ref) in self.data['objects'].items():
+        for (typ, name), (docname, ref, _) in self.data['objects'].items():
             dispname = "{} '{}'".format(typ, name)
             yield name, dispname, typ, docname, ref, 1
 
@@ -505,9 +506,9 @@ class CondaDomain(Domain):
         """Merge in data regarding *docnames* from a different domaindata
         inventory (coming from a subprocess in parallel builds).
         """
-        for (typ, name), (docname, ref) in otherdata['objects'].items():
+        for (typ, name), (docname, ref, description) in otherdata['objects'].items():
             if docname in docnames:
-                self.data['objects'][typ, name] = (docname, ref)
+                self.data['objects'][typ, name] = (docname, ref, description)
         # broken?
         #for key, data in otherdata['backrefs'].items():
         #    if docname in docnames:
@@ -599,13 +600,16 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
             'depends' : depends,
         })
 
+    recipe_extra = recipe.get('extra', None)
     template_options = {
         'name': recipe.name,
         'about': recipe.get('about', None),
-        'extra': recipe.get('extra', None),
+        'extra': recipe_extra,
         'recipe': recipe,
         'packages': packages,
     }
+
+    recipe_additional_platforms[recipe.name] = ', '.join(recipe_extra.get('additional-platforms', []))
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
     return [output_file]
