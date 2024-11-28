@@ -54,7 +54,7 @@
 
     let dataset = [
         {%- for (entry) in content %}
-        ["{{ entry.name }}", "{{ entry.archs }}"]{%- if not loop.last -%}{{ "," }}{%- endif -%} 
+        ["{{ entry.name }}", "{{ entry['latest-version'] }}", "{{ entry['additional-platforms'] }}"]{%- if not loop.last -%}{{ "," }}{%- endif -%} 
         {%- endfor %}
     ];
 
@@ -62,10 +62,10 @@
     let arm64Count = 0;
     for (let i=0; i<dataset.length; i++) {
       let entry = dataset[i];
-      if (entry[1].includes("linux-aarch64")) {
+      if (entry[2].includes("linux-aarch64")) {
         aarch64Count += 1;
       }
-      if (entry[1].includes("osx-arm64")) {
+      if (entry[2].includes("osx-arm64")) {
         arm64Count += 1;
       }
     }
@@ -80,7 +80,11 @@
       data: dataset,
       columns: [
         { title: "Name" },
-        { 
+        {
+            title: "Latest version",
+            orderable: false
+        },
+        {
             title: "Additional platforms",
             orderable: false
         },

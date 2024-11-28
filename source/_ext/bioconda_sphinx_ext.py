@@ -402,12 +402,14 @@ class PackageIndex(Index):
             if docnames and docname not in docnames:
                 continue
 
-            description = recipes_details[name]
+            recipe_details = recipes_details.get(name, {})
+            
             # TODO: Add meaningful info for extra/qualifier/description
             #       fields, e.g., latest package version.
             content.append({
                 "name": name,
-                "archs": description
+                "additional-platforms": ', '.join(recipe_details.get('additional-platforms', [])),
+                "latest-version": recipe_details.get('latest-version')
             })
 
         collapse = True
@@ -574,6 +576,8 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
         logger.error("Unable to process %s: %s", meta_fname, e)
         return []
 
+    recipe_details = recipes_details.get(recipe.name, {})
+
     # Format the README
     packages = []
     for package in sorted(list(set(recipe.package_names))):
@@ -592,6 +596,10 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
                                           build_number=sorted_versions[0][1],
                 )[0]
             ]
+
+            if recipe.name == package:
+                recipe_details['latest-version'] = sorted_versions[0][0]
+                # recipe_details['build_number'] = sorted_versions[0][1]
         else:
             depends = []
 
@@ -611,9 +619,11 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
     }
 
     if recipe_extra is None:
-        recipes_details[recipe.name] = ''
+        recipe_details['additional-platforms'] = []
     else:
-        recipes_details[recipe.name] = ', '.join(recipe_extra.get('additional-platforms', []))
+        recipe_details['additional-platforms'] = recipe_extra.get('additional-platforms', [])
+
+    recipes_details[recipe.name] = recipe_details
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
     return [output_file]
