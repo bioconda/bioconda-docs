@@ -60,7 +60,8 @@ except AttributeError:  # not running within sphinx
     import logging
     logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
-recipe_additional_platforms = {};
+# A structure that holds extra information about recipes
+recipes_details = {}
 
 def as_extlink_filter(text):
     """Jinja2 filter converting identifier (list) to extlink format
@@ -332,7 +333,7 @@ class CondaObjectDescription(ObjectDescription):
                         "Duplicate entry {} {} at {} (other in {})".format(
                             self.objtype, name, self.lineno,
                             self.env.doc2path(objects[key][0])))
-            objects[key] = (self.env.docname, target_name, recipe_additional_platforms[name])
+            objects[key] = (self.env.docname, target_name)
 
         index_text = self.get_index_text(name)
         if index_text:
@@ -397,10 +398,11 @@ class PackageIndex(Index):
         content = []
 
         objects = sorted(self.domain.data['objects'].items())
-        for (typ, name), (docname, labelid, description) in objects:
+        for (typ, name), (docname, labelid) in objects:
             if docnames and docname not in docnames:
                 continue
 
+            description = recipes_details[name]
             # TODO: Add meaningful info for extra/qualifier/description
             #       fields, e.g., latest package version.
             content.append({
@@ -443,7 +445,7 @@ class CondaDomain(Domain):
         if 'objects' not in self.data:
             return
         to_remove = [
-            key for (key, (stored_docname, _, _)) in self.data['objects'].items()
+            key for (key, (stored_docname, _)) in self.data['objects'].items()
             if docname == stored_docname
         ]
         for key  in to_remove:
@@ -497,7 +499,7 @@ class CondaDomain(Domain):
           - 2: object is unimportant (placed after full-text matches)
           - -1: object should not show up in search at all
         """
-        for (typ, name), (docname, ref, _) in self.data['objects'].items():
+        for (typ, name), (docname, ref) in self.data['objects'].items():
             dispname = "{} '{}'".format(typ, name)
             yield name, dispname, typ, docname, ref, 1
 
@@ -505,9 +507,9 @@ class CondaDomain(Domain):
         """Merge in data regarding *docnames* from a different domaindata
         inventory (coming from a subprocess in parallel builds).
         """
-        for (typ, name), (docname, ref, description) in otherdata['objects'].items():
+        for (typ, name), (docname, ref) in otherdata['objects'].items():
             if docname in docnames:
-                self.data['objects'][typ, name] = (docname, ref, description)
+                self.data['objects'][typ, name] = (docname, ref)
         # broken?
         #for key, data in otherdata['backrefs'].items():
         #    if docname in docnames:
@@ -609,9 +611,9 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
     }
 
     if recipe_extra is None:
-        recipe_additional_platforms[recipe.name] = ''
+        recipes_details[recipe.name] = ''
     else:
-        recipe_additional_platforms[recipe.name] = ', '.join(recipe_extra.get('additional-platforms', []))
+        recipes_details[recipe.name] = ', '.join(recipe_extra.get('additional-platforms', []))
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
     return [output_file]
