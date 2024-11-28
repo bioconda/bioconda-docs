@@ -24,25 +24,25 @@
    <table>
     <thead>
       <tr>
-        <th></th>
+        <th>Recipes</th>
         <th>Count</th>
         <th>Ratio</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>Total recipes:</td>
-        <td id="total-count"></td>
+        <td>Total</td>
+        <td id="total-count" style="text-align: center;"></td>
         <td></td>
       </tr>
       <tr>
-        <td>linux-aarch64 recipes:</td>
-        <td id="linux-aarch64-count"></td>
+        <td>linux-aarch64</td>
+        <td id="linux-aarch64-count" style="text-align: center;"></td>
         <td><span id="linux-aarch64-ratio"></span>%</td>
       </tr>
       <tr>
-        <td>osx-arm64 recipes:</td>
-        <td id="osx-arm64-count"></td>
+        <td>osx-arm64:</td>
+        <td id="osx-arm64-count" style="text-align: center;"></td>
         <td><span id="osx-arm64-ratio"></span>%</td>
       </tr>
     </tbody>
@@ -93,6 +93,15 @@
       lengthMenu: [
         [10, 25, 50, -1],
         [10, 25, 50, 'All']
+      ],
+      columnDefs: [
+        {
+            render: (data, type, row) => {
+              console.log(data, type, row);
+              return '<a href="./recipes/' + data + '/README.html#package-'+data+'"><code class="xref">' + data + '</code></a>'
+          },
+            targets: 0
+        },
       ],
       rowGroup: {
         enable: true,
