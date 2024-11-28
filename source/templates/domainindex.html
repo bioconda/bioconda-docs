@@ -89,25 +89,22 @@
             orderable: false
         },
       ],
-      displayLength: 25,
+      displayLength: 50,
       lengthMenu: [
-        [10, 25, 50, -1],
-        [10, 25, 50, 'All']
+        [10, 50, 100, -1],
+        [10, 50, 100, 'All']
       ],
       columnDefs: [
         {
             render: (data, type, row) => {
-              console.log(data, type, row);
-              return '<a href="./recipes/' + data + '/README.html#package-'+data+'"><code class="xref">' + data + '</code></a>'
-          },
+              return '<a href="./recipes/' + data + '/README.html#package-'+data+'"><code class="xref">' + data + '</code></a>';
+            },
             targets: 0
         },
       ],
       rowGroup: {
         enable: true,
-        dataSrc: function(row) {
-          return row[0].charAt(0).toLowerCase();
-        }
+        dataSrc: (row) => row[0].charAt(0).toLowerCase()
       }
     });
    </script>
