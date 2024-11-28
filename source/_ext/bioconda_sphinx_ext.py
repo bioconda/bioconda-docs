@@ -394,23 +394,22 @@ class PackageIndex(Index):
 
     def generate(self, docnames: Optional[List[str]] = None):
         """build index"""
-        content = {}
+        content = []
 
         objects = sorted(self.domain.data['objects'].items())
         for (typ, name), (docname, labelid, description) in objects:
             if docnames and docname not in docnames:
                 continue
-            entries = content.setdefault(name[0].lower(), [])
-            subtype = 0 # 1 has subentries, 2 is subentry
-            entries.append((
-                # TODO: Add meaningful info for extra/qualifier/description
-                #       fields, e.g., latest package version.
-                # name, subtype, docname, labelid, 'extra', 'qualifier', 'description',
-                name, subtype, docname, labelid, '', '', description,
-            ))
+
+            # TODO: Add meaningful info for extra/qualifier/description
+            #       fields, e.g., latest package version.
+            content.append({
+                "name": name,
+                "archs": description
+            })
 
         collapse = True
-        return sorted(content.items()), collapse
+        return content, collapse
 
 
 class CondaDomain(Domain):
@@ -609,7 +608,10 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
         'packages': packages,
     }
 
-    recipe_additional_platforms[recipe.name] = ', '.join(recipe_extra.get('additional-platforms', []))
+    if recipe_extra is None:
+        recipe_additional_platforms[recipe.name] = ''
+    else:
+        recipe_additional_platforms[recipe.name] = ', '.join(recipe_extra.get('additional-platforms', []))
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
     return [output_file]
