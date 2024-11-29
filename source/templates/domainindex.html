@@ -41,9 +41,19 @@
         <td><span id="noarch-ratio"></span>%</td>
       </tr>
       <tr>
+        <td>linux-64</td>
+        <td id="linux-64-count" style="text-align: center;"></td>
+        <td><span id="linux-64-ratio"></span>%</td>
+      </tr>
+      <tr>
         <td>linux-aarch64</td>
         <td id="linux-aarch64-count" style="text-align: center;"></td>
         <td><span id="linux-aarch64-ratio"></span>%</td>
+      </tr>
+      <tr>
+        <td>osx-64:</td>
+        <td id="osx-64-count" style="text-align: center;"></td>
+        <td><span id="osx-64-ratio"></span>%</td>
       </tr>
       <tr>
         <td>osx-arm64:</td>
@@ -59,20 +69,28 @@
 
     let dataset = [
         {%- for (entry) in content %}
-        ["{{ entry.name }}", "{{ entry.latest_version }}", "{{ entry.additional_platforms }}"]{%- if not loop.last -%}{{ "," }}{%- endif -%} 
+        ["{{ entry.name }}", "{{ entry.latest_version }}", "{{ entry.platforms }}"]{%- if not loop.last -%}{{ "," }}{%- endif -%} 
         {%- endfor %}
     ];
 
-    let aarch64Count = 0;
-    let arm64Count = 0;
+    let linux64Count = 0;
+    let linuxAarch64Count = 0;
+    let osx64Count = 0;
+    let osxArm64Count = 0;
     let noarchCount = 0;
     for (let i=0; i<dataset.length; i++) {
       let entry = dataset[i];
+      if (entry[2].includes("linux-64")) {
+        linux64Count += 1;
+      }
       if (entry[2].includes("linux-aarch64")) {
-        aarch64Count += 1;
+        linuxAarch64Count += 1;
+      }
+      if (entry[2].includes("osx-64")) {
+        osx64Count += 1;
       }
       if (entry[2].includes("osx-arm64")) {
-        arm64Count += 1;
+        osxArm64Count += 1;
       }
       if (entry[2].includes("noarch")) {
         noarchCount += 1;
@@ -81,10 +99,14 @@
     let totalCount = dataset.length;
     document.getElementById("noarch-count").textContent = noarchCount;
     document.getElementById("noarch-ratio").textContent = (noarchCount / totalCount * 100).toFixed(2);
-    document.getElementById("linux-aarch64-count").textContent = aarch64Count;
-    document.getElementById("linux-aarch64-ratio").textContent = (aarch64Count / totalCount * 100).toFixed(2);
-    document.getElementById("osx-arm64-count").textContent = arm64Count;
-    document.getElementById("osx-arm64-ratio").textContent = (arm64Count / totalCount * 100).toFixed(2);
+    document.getElementById("linux-64-count").textContent = linux64Count;
+    document.getElementById("linux-64-ratio").textContent = (linux64Count / totalCount * 100).toFixed(2);
+    document.getElementById("linux-aarch64-count").textContent = linuxAarch64Count;
+    document.getElementById("linux-aarch64-ratio").textContent = (linuxAarch64Count / totalCount * 100).toFixed(2);
+    document.getElementById("osx-64-count").textContent = osx64Count;
+    document.getElementById("osx-64-ratio").textContent = (osx64Count / totalCount * 100).toFixed(2);
+    document.getElementById("osx-arm64-count").textContent = osxArm64Count;
+    document.getElementById("osx-arm64-ratio").textContent = (osxArm64Count / totalCount * 100).toFixed(2);
     document.getElementById("total-count").textContent = totalCount;
 
     let table = new DataTable('#recipes-table', {
@@ -96,7 +118,7 @@
             orderable: false
         },
         {
-            title: "Additional platforms",
+            title: "Platforms",
             orderable: false
         },
       ],

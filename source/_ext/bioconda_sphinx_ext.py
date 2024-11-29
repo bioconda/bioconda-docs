@@ -404,20 +404,11 @@ class PackageIndex(Index):
 
             recipe_details = recipes_details.get(name, {})
             
-            platforms = []
-            noarch = recipe_details.get('noarch')
-            if noarch:
-                platforms.append("noarch (%s)" % noarch)
-
-            additional_platforms = recipe_details.get('additional-platforms', [])
-            if len(additional_platforms) > 0:
-                platforms.extend(additional_platforms)
-
             # TODO: Add meaningful info for extra/qualifier/description
             #       fields, e.g., latest package version.
             content.append({
                 "name": name,
-                "additional_platforms": ', '.join(platforms),
+                "platforms": ', '.join(recipe_details.get('platforms', [])),
                 "latest_version": recipe_details.get('latest_version')
             })
 
@@ -586,8 +577,6 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
         return []
 
     recipe_details = recipes_details.get(recipe.name, {})
-    
-    recipe_details['noarch'] = recipe.meta["build"].get("noarch", '')
 
     # Format the README
     packages = []
@@ -609,7 +598,22 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
             ]
 
             if recipe.name == package:
-                recipe_details['latest_version'] = sorted_versions[0][0]
+                latest_version = sorted_versions[0][0]
+                platforms = set(repodata.get_package_data('platform', channels='bioconda', name=package, version=latest_version))
+                if "noarch" in platforms:
+                    platforms = ["noarch"] # no need to list linux or osx
+                else:
+                    def mapper(platform):
+                        if "linux" == platform:
+                            return "linux-64"
+                        elif "osx" == platform:
+                            return "osx-64"
+                        else:
+                            return platform
+                    platforms = map(mapper, platforms)
+                recipe_details['platforms'] = list(platforms)
+
+                recipe_details['latest_version'] = latest_version
                 # recipe_details['build_number'] = sorted_versions[0][1]
         else:
             depends = []
