@@ -404,12 +404,21 @@ class PackageIndex(Index):
 
             recipe_details = recipes_details.get(name, {})
             
+            platforms = []
+            noarch = recipe_details.get('noarch')
+            if noarch:
+                platforms.append("noarch (%s)" % noarch)
+
+            additional_platforms = recipe_details.get('additional-platforms', [])
+            if len(additional_platforms) > 0:
+                platforms.extend(additional_platforms)
+
             # TODO: Add meaningful info for extra/qualifier/description
             #       fields, e.g., latest package version.
             content.append({
                 "name": name,
-                "additional-platforms": ', '.join(recipe_details.get('additional-platforms', [])),
-                "latest-version": recipe_details.get('latest-version')
+                "additional_platforms": ', '.join(platforms),
+                "latest_version": recipe_details.get('latest_version')
             })
 
         collapse = True
@@ -577,6 +586,8 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
         return []
 
     recipe_details = recipes_details.get(recipe.name, {})
+    
+    recipe_details['noarch'] = recipe.meta["build"].get("noarch", '')
 
     # Format the README
     packages = []
@@ -598,7 +609,7 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
             ]
 
             if recipe.name == package:
-                recipe_details['latest-version'] = sorted_versions[0][0]
+                recipe_details['latest_version'] = sorted_versions[0][0]
                 # recipe_details['build_number'] = sorted_versions[0][1]
         else:
             depends = []

@@ -36,6 +36,11 @@
         <td></td>
       </tr>
       <tr>
+        <td>noarch</td>
+        <td id="noarch-count" style="text-align: center;"></td>
+        <td><span id="noarch-ratio"></span>%</td>
+      </tr>
+      <tr>
         <td>linux-aarch64</td>
         <td id="linux-aarch64-count" style="text-align: center;"></td>
         <td><span id="linux-aarch64-ratio"></span>%</td>
@@ -54,12 +59,13 @@
 
     let dataset = [
         {%- for (entry) in content %}
-        ["{{ entry.name }}", "{{ entry['latest-version'] }}", "{{ entry['additional-platforms'] }}"]{%- if not loop.last -%}{{ "," }}{%- endif -%} 
+        ["{{ entry.name }}", "{{ entry.latest_version }}", "{{ entry.additional_platforms }}"]{%- if not loop.last -%}{{ "," }}{%- endif -%} 
         {%- endfor %}
     ];
 
     let aarch64Count = 0;
     let arm64Count = 0;
+    let noarchCount = 0;
     for (let i=0; i<dataset.length; i++) {
       let entry = dataset[i];
       if (entry[2].includes("linux-aarch64")) {
@@ -68,8 +74,13 @@
       if (entry[2].includes("osx-arm64")) {
         arm64Count += 1;
       }
+      if (entry[2].includes("noarch")) {
+        noarchCount += 1;
+      }
     }
     let totalCount = dataset.length;
+    document.getElementById("noarch-count").textContent = noarchCount;
+    document.getElementById("noarch-ratio").textContent = (noarchCount / totalCount * 100).toFixed(2);
     document.getElementById("linux-aarch64-count").textContent = aarch64Count;
     document.getElementById("linux-aarch64-ratio").textContent = (aarch64Count / totalCount * 100).toFixed(2);
     document.getElementById("osx-arm64-count").textContent = arm64Count;
