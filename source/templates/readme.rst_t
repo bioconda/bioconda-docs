@@ -64,6 +64,20 @@
    {%- endfor %}
    :requirements:
 
+   :additional platforms:
+      {% if extra and extra['additional-platforms']|length > 0 %}
+      .. raw:: html
+
+         <span class="additional-platforms">
+         {%- for platform in extra['additional-platforms'] -%}
+            <code>{{ platform }}</code>
+            {%- if not loop.last -%}
+               {{ ",\xa0 " }}
+            {%- endif -%}
+         {%- endfor -%}
+         </span>
+      {% endif %}
+
    .. rubric:: Installation
 
   You need a conda-compatible package manager

@@ -53,13 +53,15 @@ from bioconda_utils.recipe import Recipe, RecipeError
 from bioconda_utils.githandler import BiocondaRepo
 from bioconda_utils.lint import get_checks
 
-# Aquire a logger
+# Acquire a logger
 try:
     logger = sphinx_logging.getLogger(__name__)  # pylint: disable=invalid-name
 except AttributeError:  # not running within sphinx
     import logging
     logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
+# A structure that holds extra information about recipes
+recipes_details = {}
 
 def as_extlink_filter(text):
     """Jinja2 filter converting identifier (list) to extlink format
@@ -393,23 +395,25 @@ class PackageIndex(Index):
 
     def generate(self, docnames: Optional[List[str]] = None):
         """build index"""
-        content = {}
+        content = []
 
         objects = sorted(self.domain.data['objects'].items())
         for (typ, name), (docname, labelid) in objects:
             if docnames and docname not in docnames:
                 continue
-            entries = content.setdefault(name[0].lower(), [])
-            subtype = 0 # 1 has subentries, 2 is subentry
-            entries.append((
-                # TODO: Add meaningful info for extra/qualifier/description
-                #       fields, e.g., latest package version.
-                # name, subtype, docname, labelid, 'extra', 'qualifier', 'description',
-                name, subtype, docname, labelid, '', '', '',
-            ))
+
+            recipe_details = recipes_details.get(name, {})
+            
+            # TODO: Add meaningful info for extra/qualifier/description
+            #       fields, e.g., latest package version.
+            content.append({
+                "name": name,
+                "platforms": ', '.join(recipe_details.get('platforms', [])),
+                "latest_version": recipe_details.get('latest_version')
+            })
 
         collapse = True
-        return sorted(content.items()), collapse
+        return content, collapse
 
 
 class CondaDomain(Domain):
@@ -572,6 +576,8 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
         logger.error("Unable to process %s: %s", meta_fname, e)
         return []
 
+    recipe_details = recipes_details.get(recipe.name, {})
+
     # Format the README
     packages = []
     for package in sorted(list(set(recipe.package_names))):
@@ -590,6 +596,25 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
                                           build_number=sorted_versions[0][1],
                 )[0]
             ]
+
+            if recipe.name == package:
+                latest_version = sorted_versions[0][0]
+                platforms = set(repodata.get_package_data('platform', channels='bioconda', name=package, version=latest_version))
+                if "noarch" in platforms:
+                    platforms = ["noarch"] # no need to list linux or osx
+                else:
+                    def mapper(platform):
+                        if "linux" == platform:
+                            return "linux-64"
+                        elif "osx" == platform:
+                            return "osx-64"
+                        else:
+                            return platform
+                    platforms = map(mapper, platforms)
+                recipe_details['platforms'] = list(platforms)
+
+                recipe_details['latest_version'] = latest_version
+                # recipe_details['build_number'] = sorted_versions[0][1]
         else:
             depends = []
 
@@ -599,13 +624,21 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
             'depends' : depends,
         })
 
+    recipe_extra = recipe.get('extra', None)
     template_options = {
         'name': recipe.name,
         'about': recipe.get('about', None),
-        'extra': recipe.get('extra', None),
+        'extra': recipe_extra,
         'recipe': recipe,
         'packages': packages,
     }
+
+    if recipe_extra is None:
+        recipe_details['additional-platforms'] = []
+    else:
+        recipe_details['additional-platforms'] = recipe_extra.get('additional-platforms', [])
+
+    recipes_details[recipe.name] = recipe_details
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
     return [output_file]

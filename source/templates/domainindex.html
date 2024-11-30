@@ -1,0 +1,145 @@
+{# Template for domain indices (module index, ...). #}
+{%- extends "layout.html" %}
+{% set title = indextitle %}
+{% block extrahead %}
+{{ super() }}
+{% if not embedded and collapse_index %}
+    <script>
+      DOCUMENTATION_OPTIONS.COLLAPSE_INDEX = true;
+    </script>
+{% endif %}
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/rowgroup/1.5.1/css/rowGroup.dataTables.min.css"/>
+    
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/rowgroup/1.5.1/js/dataTables.rowGroup.min.js"></script>
+{% endblock %}
+{% block body %}
+
+   {%- set groupid = idgen() %}
+
+   <h1>{{ indextitle }}</h1>
+   
+   <table>
+    <thead>
+      <tr>
+        <th>Recipes</th>
+        <th>Count</th>
+        <th>Ratio</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Total</td>
+        <td id="total-count" style="text-align: center;"></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>noarch</td>
+        <td id="noarch-count" style="text-align: center;"></td>
+        <td><span id="noarch-ratio"></span>%</td>
+      </tr>
+      <tr>
+        <td>linux-64</td>
+        <td id="linux-64-count" style="text-align: center;"></td>
+        <td><span id="linux-64-ratio"></span>%</td>
+      </tr>
+      <tr>
+        <td>linux-aarch64</td>
+        <td id="linux-aarch64-count" style="text-align: center;"></td>
+        <td><span id="linux-aarch64-ratio"></span>%</td>
+      </tr>
+      <tr>
+        <td>osx-64:</td>
+        <td id="osx-64-count" style="text-align: center;"></td>
+        <td><span id="osx-64-ratio"></span>%</td>
+      </tr>
+      <tr>
+        <td>osx-arm64:</td>
+        <td id="osx-arm64-count" style="text-align: center;"></td>
+        <td><span id="osx-arm64-ratio"></span>%</td>
+      </tr>
+    </tbody>
+   </table>
+   
+   <table class="indextable modindextable" id="recipes-table"></table>
+   
+   <script>
+
+    let dataset = [
+        {%- for (entry) in content %}
+        ["{{ entry.name }}", "{{ entry.latest_version }}", "{{ entry.platforms }}"]{%- if not loop.last -%}{{ "," }}{%- endif -%} 
+        {%- endfor %}
+    ];
+
+    let linux64Count = 0;
+    let linuxAarch64Count = 0;
+    let osx64Count = 0;
+    let osxArm64Count = 0;
+    let noarchCount = 0;
+    for (let i=0; i<dataset.length; i++) {
+      let entry = dataset[i];
+      if (entry[2].includes("linux-64")) {
+        linux64Count += 1;
+      }
+      if (entry[2].includes("linux-aarch64")) {
+        linuxAarch64Count += 1;
+      }
+      if (entry[2].includes("osx-64")) {
+        osx64Count += 1;
+      }
+      if (entry[2].includes("osx-arm64")) {
+        osxArm64Count += 1;
+      }
+      if (entry[2].includes("noarch")) {
+        noarchCount += 1;
+      }
+    }
+    let totalCount = dataset.length;
+    document.getElementById("noarch-count").textContent = noarchCount;
+    document.getElementById("noarch-ratio").textContent = (noarchCount / totalCount * 100).toFixed(2);
+    document.getElementById("linux-64-count").textContent = linux64Count;
+    document.getElementById("linux-64-ratio").textContent = (linux64Count / totalCount * 100).toFixed(2);
+    document.getElementById("linux-aarch64-count").textContent = linuxAarch64Count;
+    document.getElementById("linux-aarch64-ratio").textContent = (linuxAarch64Count / totalCount * 100).toFixed(2);
+    document.getElementById("osx-64-count").textContent = osx64Count;
+    document.getElementById("osx-64-ratio").textContent = (osx64Count / totalCount * 100).toFixed(2);
+    document.getElementById("osx-arm64-count").textContent = osxArm64Count;
+    document.getElementById("osx-arm64-ratio").textContent = (osxArm64Count / totalCount * 100).toFixed(2);
+    document.getElementById("total-count").textContent = totalCount;
+
+    let table = new DataTable('#recipes-table', {
+      data: dataset,
+      columns: [
+        { title: "Name" },
+        {
+            title: "Latest version",
+            orderable: false
+        },
+        {
+            title: "Platforms",
+            orderable: false
+        },
+      ],
+      displayLength: 50,
+      lengthMenu: [
+        [10, 50, 100, -1],
+        [10, 50, 100, 'All']
+      ],
+      columnDefs: [
+        {
+            render: (data, type, row) => {
+              return '<a href="./recipes/' + data + '/README.html#package-'+data+'"><code class="xref">' + data + '</code></a>';
+            },
+            targets: 0
+        },
+      ],
+      rowGroup: {
+        enable: true,
+        dataSrc: (row) => row[0].charAt(0).toLowerCase()
+      }
+    });
+   </script>
+
+{% endblock %}
