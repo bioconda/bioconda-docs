@@ -300,9 +300,9 @@ texinfo_documents = [
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
-    "conda.io": ("https://conda.io/en/latest", None),
-    "conda-build": ("https://conda.io/projects/conda-build/en/latest/", None),
-    "conda": ("https://conda.io/projects/conda/en/latest/", None),
+    "conda.io": ("https://docs.conda.io/en/latest", None),
+    "conda-build": ("https://docs.conda.io/projects/conda-build/en/latest/", None),
+    "conda": ("https://docs.conda.io/projects/conda/en/latest/", None),
     "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
 }
 
