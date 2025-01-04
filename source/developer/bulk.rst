@@ -31,10 +31,10 @@ Managing a bulk run
    prefer what's on the master branch.
 
 #. **Make initial changes.** Typically one person is responsible for this part.
+
    * For pinning updates, see :ref:`update-pinnings`
    * For Bioconductor releases, see :ref:`update-bioconductor`
-   * If a Bioconductor release *also* uses a new R version, complete a pinning
-     migration first.
+   * If a Bioconductor release *also* uses a new R version, complete a pinning migration first.
    * For other changes, you will likely need to write your own tooling.
 
 #. **Commit and push** these changes to bulk.
@@ -52,6 +52,7 @@ Managing a bulk run
    wiki. This strategy is good because the bulk branch update should be
    performed as fast as possible to avoid redundant work between master and
    bulk. Also, skiplisting democratizes the update effort.
+
    * Push commits as soon as they are done, so other people know the build
      failure has been addressed. It may be helpful to prefix your commit
      message with the recipe name, for easy viewing on the `bulk branch Actions
@@ -139,7 +140,7 @@ a new Python or R version. Here is what you need to do:
    of RAM and a bit of time.
 
 #. **IMPORTANT:** if you are also doing a Bioconductor release with a new
-   version of R, then *revert changes to all Bioconductor packages* from the
+   version of R, then **revert changes to all Bioconductor packages** from the
    above command with ``git checkout -- recipes/bioconductor-*``. This way, we
    avoid new builds of BioC packages for a new version of R that they may not
    be compatible with. Once the pinning updates have been completed on bulk by
