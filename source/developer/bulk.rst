@@ -4,50 +4,23 @@ The ``bulk`` branch
 .. datechanged:: 2025-01-04
    Updated based on recent BioC 3.20 builds
 
-Sometimes we need to do maintenance or make changes to lots of recipes at once.
-This happens most often when there is a new Bioconductor release: all
-`bioconductor-*` recipes need to be updated, and the corresponding packages
-need to be built.
-
-This ends up taking substantial compute time on CI infrastructure. If this were
-run on the same CI infrastructure that processes pull requests, this might
-consume CI time needed for the typical functioning of the daily activity in the
-bioconda repository. The ``bulk`` branch is a mechanism for the Bioconda core
-team to perform large-scale changes on a different CI system, without tying up
-the CI infrastructure used by contributors on individual pull requests.
-
-The bulk branch reads its configuration (which version of bioconda-utils and
-miniconda) from the ``bulk`` branch of `bioconda-common`.
+The ``bulk`` branch is used for large-scale maintenance tasks, like supporting
+a new version of Python or building all `bioconductor-*` recipes for a new
+release of Bioconductor. These tasks can take up substantial compute time, so
+they are run on separate CI infrastructure to avoid disrupting normal daily
+activity in the bioconda-recipes repository.
 
 **The bulk branch immediately uploads successfully built packages to
 Anaconda.** As such, only the bioconda core team has the ability to push to
 this branch.
-
 
 .. _bulk-jobs:
 
 Managing a bulk run
 -------------------
 
-
-.. note::
-
-   The bulk CI jobs are executed if any of the pushed commit messages contain
-   the substring ``[ci run]``. This helps avoid race conditions caused by
-   multiple CI jobs spawned from different commits, possibly from different
-   people.
-
-   Use the command ``bioconda-utils bulk-trigger-ci`` to create and push an empty
-   commit that is immediately pushed automatically to the bulk branch, thereby
-   triggering a CI run.
-
-
-#. **Merge master into bulk.** In bioconda-recipes, merge master into bulk to
-   start with a clean slate. Since bulk is infrequently updated, there may be
-   substantial conflicts caused by running the default ``git checkout bulk &&
-   git merge master``. This tends to happen most with build numbers. But since
-   we want to prefer using whatever is in the master branch, we can merge
-   master into bulk, while preferring master version in any conflicts, with:
+#. **Merge master into bulk.** Start with a clean slate by merging master into
+   bulk, preferring what's on master:
 
    .. code-block:: bash
 
@@ -60,26 +33,25 @@ Managing a bulk run
 #. **Make initial changes.** Typically one person is responsible for this part.
    * For pinning updates, see :ref:`update-pinnings`
    * For Bioconductor releases, see :ref:`update-bioconductor`
-   * If this Bioconductor release *also* uses a new version of R, then first
-     complete a pinning migration and when that's complete then do the
-     Bioconductor migration. The :ref:`update-pinnngs` section has further
-     notes on this.
+   * If a Bioconductor release *also* uses a new R version, complete a pinning
+     migration first.
    * For other changes, you will likely need to write your own tooling.
 
 #. **Commit and push** these changes to bulk.
 
-#. **Start a run.** Use ``bioconda-utils bulk-trigger-ci`` to start a run.
+#. **Start a run.** Use ``bioconda-utils bulk-trigger-ci`` to start a run. Or
+   include the string ``[ci run]`` in a commit message.
 
-#. **Address build failures.** Once the CI run has finished, inspect all build
-   failures (see :ref:`handling-build-failures`). For each failure, decide
-   whether the recipe shall be skiplisted or whether you would like to fix it.
-   In general, spend time to fix highly depended-upon packages and anything
-   else that is obvious and easy. For the rest, mark the recipes as skiplisted
-   in the build failure file. It will be ignored by subsequent CI runs and put
-   into a table in the bioconda-recipes wiki. This strategy is good because the
-   bulk branch update should be performed as fast as possible to avoid
-   redundant work between master and bulk. Also, skiplisting democratizes the
-   update effort.
+#. **Address build failures.** Inspect all build
+   failures (see :ref:`handling-build-failures`). This is the time consuming
+   part. For each failure, decide whether the recipe shall be skiplisted or
+   whether you would like to fix it. In general, spend time to fix highly
+   depended-upon packages and anything else that is obvious and easy. For the
+   rest, mark the recipes as skiplisted in the build failure file. It will be
+   ignored by subsequent CI runs and put into a table in the bioconda-recipes
+   wiki. This strategy is good because the bulk branch update should be
+   performed as fast as possible to avoid redundant work between master and
+   bulk. Also, skiplisting democratizes the update effort.
    * Push commits as soon as they are done, so other people know the build
      failure has been addressed. It may be helpful to prefix your commit
      message with the recipe name, for easy viewing on the `bulk branch Actions
@@ -96,14 +68,13 @@ Managing a bulk run
    another run. *Warning, this process can take weeks.* See :ref:`bulk-notes` for
    some pointers.
 
-#. **Merge master into bulk.** Once all the packages have either been
-   successfully built or skiplisted, locally pull the master branch
-   and merge it into bulk. Usually, conflicts can occur here due to
-   build-numbers having been increased in the master branch while you did your
-   changes in bulk. For such cases (which should be not so many) you can just
-   increase the build number to ``max(build_number_master, build_number_bulk)``
-   and commit all of those. Repeat this until master is merged without any
-   conflicts.
+#. **Merge master into bulk again.** Once all the packages have either been
+   successfully built or skiplisted, locally pull the master branch and merge
+   it into bulk. Usually, conflicts can occur here due to build-numbers having
+   been increased in the master branch while you did your changes in bulk. For
+   such cases, increase the build number to ``max(build_number_master,
+   build_number_bulk)`` and commit all of those. Repeat this until master is
+   merged without any conflicts.
 
 #. **Update common.sh for master** Ensure that `bioconda-common/common.sh
    <https://github.com/bioconda/bioconda-common/blob/master/common.sh>`_ points
@@ -183,19 +154,19 @@ Then continue following the steps in :ref:`bulk-jobs`.
 Updating Bioconductor
 ---------------------
 
-Bioconductor gets updated twice a year (spring and fall), where all BioC
-packages get released with updated versions at the same time. This in turn
-requires updating the packages on Bioconda. This is a perfect use-case for the
-bulk branch. The process is generally the same as above but without the
-pinnings updates and with some Bioconductor-specific helper scripts.
+Bioconductor gets updated twice a year (spring and fall). All Bioconductor
+packages are designed to work together within a Bioconductor release, so we
+need to update all packages simultaneously, building packages in order of the
+dependency tree.
 
 **Bioconductor releases are tied to an R version.** We need to wait until
-conda-forge finishes, or at least gets to an advanced stage, of building
+conda-forge finishes, or at least gets to an advanced stage of building
 packages for the new version of R. Then, we need to first go through the
 :ref:`update-pinnings` workflow (while ensuring Bioconductor packages DO NOT
-have their build numbers updated). This ensures  the non-BioConductor packages
-are built for the new version of R. Then we can proceed with updating
-Bioconductor packages:
+have their build numbers updated). This ensures the non-BioConductor packages
+are built for the new version of R.
+
+Then we can proceed with updating Bioconductor packages:
 
 #. Follow the **Merge master into bulk** step in :ref:`bulk-jobs`.
 
@@ -326,8 +297,7 @@ Some unordered notes on working with the bulk branch:
   of recipes skiplisted only because their dependencies happened to not get
   built yet due to being on a different worker.
 
-- Bulk migrations are a lot of work, often taking multiple weeks of babysitting
-  jobs and making incremental fixes. Block out time if you can.
+- Bulk migrations can take weeks. Plan accordingly.
 
 - The bulk branch has ``fail-fast: false`` set to allow parallel jobs to
   progress as much as possible. If multiple people trigger a bulk run, jobs
