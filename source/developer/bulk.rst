@@ -128,7 +128,7 @@ a new Python or R version. Here is what you need to do:
    in the Release Please PR to create a new version of bioconda-utils.
 
 #. Update ``common.sh`` (see `here
-   <https://github.com/bioconda/bioconda-common/blob/master/common.sh>`_) **only on the bulk
+   <https://github.com/bioconda/bioconda-common/blob/bulk/common.sh>`_) **only on the bulk
    branch in bioconda-common**, to match the newly-updated bioconda-utils
    version. Changing the pinnings will likely trigger many recipes to require
    rebuilding. Since the bioconda-recipes/bulk branch reads from the
@@ -164,7 +164,11 @@ dependency tree.
 
 **Bioconductor releases are tied to an R version.** We need to wait until
 conda-forge finishes, or at least gets to an advanced stage of building
-packages for the new version of R. Then, we need to first go through the
+packages for the new version of R. 
+
+To view the current status of a conda-forge r-base migration, visit the `conda-forge status dashboard <https://conda-forge.org/status/>`_. In the bioconda-recipes repository, use the ``missingCranPackages.py`` script to generate a list of all incomplete packages that are referenced in a bioconda recipe. Example: ``python ./scripts/bioconductor/missingCranPackages.py --format markdown --migration_id r-base44_and_m2w64-ucrt`` The markdown output can be added to an Issue for tracking purposes.
+
+Then, we need to first go through the
 :ref:`update-pinnings` workflow (while ensuring Bioconductor packages DO NOT
 have their build numbers updated). This ensures the non-BioConductor packages
 are built for the new version of R.
@@ -183,7 +187,7 @@ Then we can proceed with updating Bioconductor packages:
         bioconda-utils bioconductor-skeleton update-all-packages --bioc-version $BIOC_VERSION
 
 #. The `bioconductor-data-packages` will have changed with the URLs to data
-   packages. Manually bump the version to reflect this.
+   packages. Manually bump the version to match the current date reflect this.
 
 #. Commit and push the changes.
 
@@ -283,7 +287,8 @@ corresponding help message:
 Skiplisted recipes from the master branch are automatically displayed in
 a `wiki page
 <https://github.com/bioconda/bioconda-recipes/wiki/build-failures>`_, so that
-others can pick them up for providing a fix.
+others can pick them up for providing a fix. Failures that only exist on the Bulk branch, but not on the master branch, are displayed on `this wiki page
+<https://github.com/bioconda/bioconda-recipes/wiki/build-failures-bulk>`_. Note that this page is only updated when a build failure yaml file is updated and the commit message does not contain "[ci skip]".
 
 .. _bulk-notes:
 
@@ -341,6 +346,8 @@ Some unordered notes on working with the bulk branch:
   GitHub Actions, and the configuration is in
   :file:`.github/workflows/Bulk.yml`. For ``linux-aarch64``, the builds take
   place on CircleCI and the configuration is in :file:`.circleci/config.yml`.
+  
+- Jobs time out at 6 hours on GitHub Actions and 1 hour on Circle CI. These limits are likely to be hit early in the process. If the timeout is reached, wait for all jobs to complete (pass, fail, or timeout), and trigger a new run.
 
 - You may end up with a lot of skiplisted leaf packages -- especially from
   packages whose dependencies were not built yet because they were on
