@@ -34,7 +34,10 @@ Managing a bulk run
 
    * For pinning updates, see :ref:`update-pinnings`
    * For Bioconductor releases, see :ref:`update-bioconductor`
-   * If a Bioconductor release *also* uses a new R version, complete a pinning migration first.
+   * If a Bioconductor release *also* uses a new R version, complete a pinning
+     migration first. You will need to wait for (or better yet, help out with)
+     conda-forge building packages for the new R version. See
+     :ref:`update-bioconductor` for more details.
    * For other changes, you will likely need to write your own tooling.
 
 #. **Commit and push** these changes to bulk.
@@ -82,8 +85,7 @@ Managing a bulk run
    to the same version of bioconda-utils that the ``bulk`` branch has been
    using.
 
-#. **Merge bulk into master.** Working locally, merge bulk into master. Push
-   the changes directly to master.
+#. **Merge bulk into master.** Open a PR to merge bulk into master and merge it.
 
 #. **Work on fixing skiplisted recipes.** Shortly afterwards, you will find all
    remaining build failures in the `bioconda-recipes wiki
