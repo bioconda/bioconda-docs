@@ -7,7 +7,7 @@ The ``bulk`` branch
 The ``bulk`` branch is used for large-scale maintenance tasks, like supporting
 a new version of Python or building all `bioconductor-*` recipes for a new
 release of Bioconductor. These tasks can take up substantial compute time, so
-they are run on separate CI infrastructure to avoid disrupting normal daily
+they are run on separate CI workflows to avoid disrupting normal daily
 activity in the bioconda-recipes repository.
 
 **The bulk branch immediately uploads successfully built packages to
