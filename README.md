@@ -43,6 +43,9 @@ Make an environment containing the `bioconda-utils` package. E.g.,
 mamba create \
   env -n bioconda-docs \
   bioconda-utils \
+  sphinx \
+  sphinx-autodoc-typehints \
+  celery \
   --channel conda-forge \
   --channel bioconda \
   --strict-channel-priority
