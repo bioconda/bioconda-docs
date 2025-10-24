@@ -28,6 +28,7 @@ Usage
 With Pixi
 ---------
 
+Pixi is a modern, extremely fast, frontend for conda packages and environments.
 First, `install pixi`_.
 Then, configure pixi to use bioconda in addition to it's default (`conda-forge`_)::
 
