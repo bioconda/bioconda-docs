@@ -93,7 +93,7 @@
 
       mamba install {{ package.name }}
 
-   and update with::
+  and update with::
 
       mamba update {{  package.name }}
 
