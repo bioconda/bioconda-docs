@@ -78,7 +78,7 @@
          </span>
       {% endif %}
 
-   .. rubric:: Installation
+ .. rubric:: Installation
 
   You need a conda-compatible package manager
   (currently either `micromamba <https://mamba.readthedocs.io>`_, `mamba <https://mamba.readthedocs.io>`_, or `conda <https://docs.conda.io/projects/conda>`_)
@@ -108,7 +108,7 @@
 
       docker pull quay.io/biocontainers/{{ package.name }}:<tag>
 
-   (see `{{package.name}}/tags`_ for valid values for ``<tag>``)
+ (see `{{package.name}}/tags`_ for valid values for ``<tag>``)
 
 
 .. |downloads_{{package.name}}| image:: https://img.shields.io/conda/dn/bioconda/{{package.name}}.svg?style=flat
