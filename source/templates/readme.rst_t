@@ -82,7 +82,7 @@
 
   You need a conda-compatible package manager
   (currently either `micromamba <https://mamba.readthedocs.io>`_, `mamba <https://mamba.readthedocs.io>`_, or `conda <https://docs.conda.io/projects/conda>`_)
-  and the Bioconda channel already activated (see :ref:`set-up-channels`).
+  and the Bioconda channel already activated (see :ref:`with-conda`).
 
   While any of above package managers is fine, it is currently recommended to use either
   micromamba or mamba (see `here <https://mamba.readthedocs.io>`_ for installation instructions).

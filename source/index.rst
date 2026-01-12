@@ -56,12 +56,12 @@ For more options and details see the `pixi documentation <https://pixi.sh>`__.
 .. _`Install pixi`: https://pixi.sh/latest/installation
 .. _`conda-forge`: https://conda-forge.org/docs/index.html
 
+.. _with-conda:
+
 With Conda
 ----------
 
 First, `install conda`_.
-
-.. _set-up-channels:
 
 Then perform a one-time set up of Bioconda with the following commands. This
 will modify your :file:`~/.condarc` file::
