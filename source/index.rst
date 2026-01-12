@@ -61,6 +61,8 @@ With Conda
 
 First, `install conda`_.
 
+.. _set-up-channels:
+
 Then perform a one-time set up of Bioconda with the following commands. This
 will modify your :file:`~/.condarc` file::
 
