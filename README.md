@@ -37,12 +37,13 @@ allows us to keep editing the documentation lightweight.
 
 ## Building docs locally
 
-Make an environment containing the `bioconda-utils` package. E.g.,
+Make an environment containing the `bioconda-utils` package and some further build tools. E.g.,
 
 ```bash
 mamba create \
-  env -n bioconda-docs \
+  -n bioconda-docs \
   bioconda-utils \
+  sphinx sphinx-autodoc-typehints celery \
   --channel conda-forge \
   --channel bioconda \
   --strict-channel-priority
