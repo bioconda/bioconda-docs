@@ -56,11 +56,17 @@ top level of this repo, run:
 make BIOCONDA_FILTER_RECIPES=10 html SPHINXOPTS="-T -j1"
 ```
 
-The output will be found in `build/html`. 
+This will generate all the main HTML files plus the `README.html` for 10 recipes, with the output in `build/html`.
 
-Note that you can set `BIOCONDA_FILTER_RECIPES` to some other number; omitting
-it completely will build *all* recipes' README.html pages which can take
-a while.
+Note that you can set `BIOCONDA_FILTER_RECIPES` to some other number or to a regex.
+For example, you can specify the building of only the `openms-meta` recipe with:
+
+```bash
+make BIOCONDA_FILTER_RECIPES="openms-meta" html SPHINXOPTS="-T -j1"
+```
+
+And omitting `BIOCONDA_FILTER_RECIPES` completely will build *all* recipes' README.html pages.
+This can take a while.
 
 
 ## Points of interest
