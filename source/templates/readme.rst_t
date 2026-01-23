@@ -121,10 +121,10 @@
 
 .. raw:: html
 
-    <script>
-        var package = "{{name}}";
-        var versions = [{%- for version in package.versions[:5] -%} "{{ version.split('-')[0] }}"{%- if not loop.last -%},{%- endif -%} {%- endfor -%}];
-    </script>
+   <script>
+      var package = "{{package.name}}";
+      var versions = [{%- for version in package.versions[:5] -%} "{{ version.split('-')[0] }}"{%- if not loop.last -%},{%- endif -%} {%- endfor -%}];
+   </script>
 
 .. rubric:: Download stats
 
