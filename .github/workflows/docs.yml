@@ -41,10 +41,10 @@ jobs:
 
     - name: check variables
       run: |
-        echo "${{ github.ref }}";
         git log -1 --pretty=format:"%s";
-        echo "${{ toJSON(github.event.commits) }}";
-        echo "${{toJSON(github.event.pull_request)}}";
+        echo "${{ github.ref }}";
+        echo "${{ github.event.commits }}";
+        echo "${{ toJSON(github.event.pull_request) }}";
 
     - name: restrict number of built recipes
       if: ${{
