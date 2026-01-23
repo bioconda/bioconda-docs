@@ -43,8 +43,8 @@ jobs:
       run: |
         git log -1 --pretty=format:"%s";
         echo "${{ github.ref }}";
-        echo "${{ toJSON(github.event) }}";
-        echo "${{ toJSON(github) }}";
+        echo '${{ toJSON(github.event) }}';
+        echo '${{ toJSON(github) }}';
 
     - name: restrict number of built recipes
       if: ${{
