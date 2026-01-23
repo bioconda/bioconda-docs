@@ -44,7 +44,7 @@ jobs:
         echo "${{ github.ref }}";
         echo "${{ github.event.pull_request.commits[-1].message }}";
         echo "${{ github.event.pull_request.commits[ github.event.pull_request.commits - 1 ].message }}";
-        echo '${{toJSON(github.event)}}'
+        echo "${{toJSON(github.event)}}";
 
     - name: restrict number of built recipes
       if: ${{
