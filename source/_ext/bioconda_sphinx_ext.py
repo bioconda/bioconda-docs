@@ -580,7 +580,16 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
 
     # Format the README
     packages = []
-    for package in sorted(list(set(recipe.package_names))):
+
+    # Check, whether the recipe has an outputs section. If so, we need to look
+    # at its contents -- otherwise we only look at the main package name.
+    outputs_section = recipe.get("outputs", {})
+    if outputs_section:
+        outputs = sorted([o["name"] for o in outputs_section])
+    else:
+        outputs = [ recipe.name ]
+
+    for package in outputs:
         versions_in_channel = set(repodata.get_package_data(['version', 'build_number'],
                                                             channels='bioconda', name=package))
         sorted_versions = sorted(versions_in_channel,

@@ -37,12 +37,13 @@ allows us to keep editing the documentation lightweight.
 
 ## Building docs locally
 
-Make an environment containing the `bioconda-utils` package. E.g.,
+Make an environment containing the `bioconda-utils` package and some further build tools. E.g.,
 
 ```bash
 mamba create \
-  env -n bioconda-docs \
+  -n bioconda-docs \
   bioconda-utils \
+  sphinx sphinx-autodoc-typehints celery \
   --channel conda-forge \
   --channel bioconda \
   --strict-channel-priority
@@ -55,11 +56,17 @@ top level of this repo, run:
 make BIOCONDA_FILTER_RECIPES=10 html SPHINXOPTS="-T -j1"
 ```
 
-The output will be found in `build/html`. 
+This will generate all the main HTML files plus the `README.html` for 10 recipes, with the output in `build/html`.
 
-Note that you can set `BIOCONDA_FILTER_RECIPES` to some other number; omitting
-it completely will build *all* recipes' README.html pages which can take
-a while.
+Note that you can set `BIOCONDA_FILTER_RECIPES` to some other number or to a regex.
+For example, you can specify the building of only the `openms-meta` recipe with:
+
+```bash
+make BIOCONDA_FILTER_RECIPES="openms-meta" html SPHINXOPTS="-T -j1"
+```
+
+And omitting `BIOCONDA_FILTER_RECIPES` completely will build *all* recipes' README.html pages.
+This can take a while.
 
 
 ## Points of interest
