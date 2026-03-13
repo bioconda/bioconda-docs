@@ -81,7 +81,7 @@ Installation
 ------------
 
 You need a conda-compatible package manager
-(currently either `pixi <https://pixi.sh>`__, `micromamba <https://mamba.readthedocs.io>`__, `mamba <https://mamba.readthedocs.io>`__, or `conda <https://docs.conda.io/projects/conda>`__)
+(currently either `pixi <https://pixi.sh>`__, `conda <https://docs.conda.io/projects/conda>`__, or `micromamba <https://mamba.readthedocs.io>`__)
 and the Bioconda channel already activated (see :ref:`bioconda_setup`).
 Below, we show how to install with either pixi or conda (for micromamba and mamba, commands are essentially the same as with conda).
 
