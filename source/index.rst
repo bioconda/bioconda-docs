@@ -21,9 +21,9 @@
 
    .. raw:: html
 
-      <h1 class="hero-title">The Conda Channel for Biomedical Software</h1>
+      <h1 class="hero-title">A distribution of bioinformatics software</h1>
       <p class="hero-subtitle">
-        Bioconda is a community-driven project facilitating biomedical research by providing over 12,000 packages for <strong>Conda</strong> and <strong>Pixi</strong>.
+        Install thousands of bioinformatics packages using <strong>Conda</strong> and <strong>Pixi</strong>.
       </p>
       <div class="hero-cta">
         <a href="conda-package_index.html" class="btn hero-btn-primary">
@@ -115,7 +115,7 @@ settings follow the current recommendations.
         conda config --add channels conda-forge
 
     - The ``bioconda`` channel enables installation of packages related to
-      biomedical research.
+      bioinformatics.
 
     - The ``conda-forge`` channel (see `docs
       <https://conda-forge.org/docs/index.html>`_) enables installation of
