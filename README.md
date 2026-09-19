@@ -47,6 +47,33 @@ To start the live-reloading development server at `http://127.0.0.1:8000`:
 pixi run dev
 ```
 
+By default, `pixi run dev` limits recipe generation to **10 recipes** for snappy builds and live reloading. You can customize the recipe limit in several ways:
+
+- **Pass a count directly as an argument:**
+  ```bash
+  pixi run dev 25
+  ```
+
+- **Set the limit via environment variable:**
+  ```bash
+  BIOCONDA_FILTER_RECIPES=50 pixi run dev
+  ```
+
+- **Filter by recipe name pattern (regex):**
+  ```bash
+  BIOCONDA_FILTER_RECIPES="samtools" pixi run dev
+  ```
+
+- **Build all recipes (takes significantly longer):**
+  ```bash
+  pixi run dev all
+  ```
+
+- **Pass custom flags to `sphinx-autobuild` (e.g., custom port or host):**
+  ```bash
+  pixi run dev 20 --port 8080 --host 0.0.0.0
+  ```
+
 ### Static build
 
 To generate all the main HTML files plus the `README.html` for a limited subset of 10 recipes (for faster builds) outputting to `build/html`:

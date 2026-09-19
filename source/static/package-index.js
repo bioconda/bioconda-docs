@@ -29,40 +29,59 @@
             copiedPackage: null,
             _urlDebounceTimer: null,
 
+            loadPackages(rawList) {
+                if (!Array.isArray(rawList)) return;
+                this.packages = rawList.map(pkg => ({
+                    name: pkg.name || "",
+                    docname: pkg.docname || ("recipes/" + pkg.name + "/README"),
+                    platforms: Array.isArray(pkg.platforms) ? pkg.platforms : (pkg.platforms ? [pkg.platforms] : []),
+                    latest_version: pkg.latest_version || "",
+                    summary: pkg.summary || "",
+                    home: pkg.home || "",
+                    license: pkg.license || "",
+                    doc_url: pkg.doc_url || "",
+                    dev_url: pkg.dev_url || "",
+                    _searchStr: (
+                        (pkg.name || "") + " " +
+                        (pkg.summary || "") + " " +
+                        (pkg.license || "") + " " +
+                        (Array.isArray(pkg.platforms) ? pkg.platforms.join(" ") : "")
+                    ).toLowerCase()
+                }));
+                this.computeStats();
+                this.readUrlParams();
+            },
+
             init() {
-                // Parse package data embedded by Sphinx in JSON script tag
+                // 1. Try reading embedded JSON dataset first
+                let raw = null;
                 const dataEl = document.getElementById("bioconda-packages-data");
-                if (dataEl && dataEl.textContent) {
+                if (dataEl && dataEl.textContent && dataEl.textContent.trim()) {
                     try {
-                        const raw = JSON.parse(dataEl.textContent);
-                        this.packages = raw.map(pkg => ({
-                            name: pkg.name || "",
-                            docname: pkg.docname || ("recipes/" + pkg.name + "/README"),
-                            platforms: Array.isArray(pkg.platforms) ? pkg.platforms : (pkg.platforms ? [pkg.platforms] : []),
-                            latest_version: pkg.latest_version || "",
-                            summary: pkg.summary || "",
-                            home: pkg.home || "",
-                            license: pkg.license || "",
-                            doc_url: pkg.doc_url || "",
-                            dev_url: pkg.dev_url || "",
-                            _searchStr: (
-                                (pkg.name || "") + " " +
-                                (pkg.summary || "") + " " +
-                                (pkg.license || "") + " " +
-                                (Array.isArray(pkg.platforms) ? pkg.platforms.join(" ") : "")
-                            ).toLowerCase()
-                        }));
+                        raw = JSON.parse(dataEl.textContent);
                     } catch (e) {
                         console.error("Failed to parse bioconda-packages-data:", e);
-                        this.packages = [];
                     }
                 }
 
-                // Compute ecosystem statistics
-                this.computeStats();
-
-                // Restore state from URL query parameters
-                this.readUrlParams();
+                if (Array.isArray(raw) && raw.length > 0) {
+                    this.loadPackages(raw);
+                } else {
+                    // Fallback: fetch packages-index.json
+                    fetch("./packages-index.json")
+                        .then(res => {
+                            if (!res.ok) throw new Error("HTTP " + res.status);
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (Array.isArray(data) && data.length > 0) {
+                                this.loadPackages(data);
+                            }
+                        })
+                        .catch(err => {
+                            console.debug("packages-index.json fetch fallback:", err);
+                        });
+                }
 
                 // Listen for keyboard shortcuts
                 window.addEventListener("keydown", (e) => {
@@ -342,6 +361,9 @@
             }
         };
     }
+
+    // Expose component globally on window for Alpine auto-lookup
+    window.biocondaPackageRegistry = packageRegistryComponent;
 
     if (window.Alpine) {
         window.Alpine.data("biocondaPackageRegistry", packageRegistryComponent);

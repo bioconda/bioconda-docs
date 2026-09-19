@@ -17,4 +17,4 @@ sphinx-autobuild = "*"
 sphinx-copybutton = "*"
 
 [tasks]
-dev = { cmd = "sphinx-autobuild source build/html", env = { BIOCONDA_FILTER_RECIPES = "10" } }
+dev = { cmd = "bash scripts/dev.sh" }

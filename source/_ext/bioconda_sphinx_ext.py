@@ -397,12 +397,13 @@ class PackageIndex(Index):
         """build index"""
         content = []
 
+        details = self.domain.data.setdefault('details', {})
+        if recipes_details:
+            details.update(recipes_details)
+
         objects = sorted(self.domain.data['objects'].items())
         for (typ, name), (docname, labelid) in objects:
-            if docnames and docname not in docnames:
-                continue
-
-            recipe_details = recipes_details.get(name, {})
+            recipe_details = details.get(name) or recipes_details.get(name, {})
             platforms = recipe_details.get('platforms', [])
             if isinstance(platforms, str):
                 platforms = [p.strip() for p in platforms.split(',') if p.strip()]

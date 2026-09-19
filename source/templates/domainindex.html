@@ -4,11 +4,16 @@
 {% block extrahead %}
 {{ super() }}
   <link rel="stylesheet" href="{{ pathto('_static/package-index.css', 1) }}"/>
-  <script defer src="{{ pathto('_static/vendor/alpine.min.js', 1) }}"></script>
   <script defer src="{{ pathto('_static/package-index.js', 1) }}"></script>
+  <script defer src="{{ pathto('_static/vendor/alpine.min.js', 1) }}"></script>
 {% endblock %}
 
 {% block body %}
+
+<!-- JSON Dataset embedded safely by Sphinx at build time -->
+<script id="bioconda-packages-data" type="application/json">
+{{ content | tojson }}
+</script>
 
 <div class="package-index" x-data="biocondaPackageRegistry()" x-cloak>
 
@@ -259,10 +264,5 @@
   </nav>
 
 </div>
-
-<!-- JSON Dataset embedded safely by Sphinx at build time -->
-<script id="bioconda-packages-data" type="application/json">
-{{ content | tojson }}
-</script>
 
 {% endblock %}
