@@ -202,7 +202,6 @@
             setPlatform(p) {
                 this.platform = p;
                 this.page = 1;
-                this.scrollToTop();
             },
 
             clearFilters() {
@@ -210,7 +209,6 @@
                 this.platform = "all";
                 this.sortBy = "name-asc";
                 this.page = 1;
-                this.scrollToTop();
             },
 
             setPage(p) {
@@ -224,7 +222,10 @@
             scrollToTop() {
                 const header = document.getElementById("packages-search-toolbar");
                 if (header) {
-                    header.scrollIntoView({ behavior: "smooth", block: "start" });
+                    const rect = header.getBoundingClientRect();
+                    if (rect.top < 0) {
+                        header.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
                 }
             },
 
@@ -266,15 +267,9 @@
                 // 3. Sorting
                 if (this.sortBy === "name-desc") {
                     return [...list].sort((a, b) => b.name.localeCompare(a.name));
-                } else if (this.sortBy === "platforms-desc") {
-                    return [...list].sort((a, b) =>
-                        (b.platforms?.length || 0) - (a.platforms?.length || 0) || a.name.localeCompare(b.name)
-                    );
-                } else if (this.sortBy === "name-asc") {
-                    return [...list].sort((a, b) => a.name.localeCompare(b.name));
                 }
 
-                return list;
+                return [...list].sort((a, b) => a.name.localeCompare(b.name));
             },
 
             get totalFiltered() {
