@@ -11,12 +11,32 @@
    For more information on the ".. details::" directive, see
    _ext/details_ext.py.
 
-.. image:: images/bioconda.png
+.. title:: Bioconda
 
-**Bioconda** lets you install thousands of software packages related to
-biomedical research using the `conda <https://conda.io>`_ package manager.
+.. container:: hero-section
 
-**NOTE**: *Bioconda supports only Linux (64-bit and AArch64) and macOS (x86_64 and ARM64)*
+   .. image:: images/bioconda.png
+      :class: hero-logo
+      :alt: Bioconda
+
+   .. raw:: html
+
+      <h1 class="hero-title">The Conda Channel for Biomedical Software</h1>
+      <p class="hero-subtitle">
+        Bioconda is a community-driven project facilitating biomedical research by providing over 12,000 packages for <strong>Conda</strong> and <strong>Pixi</strong>.
+      </p>
+      <div class="hero-cta">
+        <a href="conda-package_index.html" class="btn hero-btn-primary">
+          <i class="fa-solid fa-boxes-stacked me-2"></i>Explore Packages
+        </a>
+        <a href="contributor/index.html" class="btn hero-btn-secondary">
+          <i class="fa-solid fa-code-pull-request me-2"></i>Contribute Packages
+        </a>
+      </div>
+      <div class="hero-badges">
+        <span class="platform-badge"><i class="fa-brands fa-linux me-1"></i> Linux (x86_64, aarch64)</span>
+        <span class="platform-badge"><i class="fa-brands fa-apple me-1"></i> macOS (x86_64, arm64)</span>
+      </div>
 
 .. _bioconda_setup:
 
