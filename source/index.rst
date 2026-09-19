@@ -13,23 +13,26 @@
 
 .. title:: Bioconda
 
-.. image:: images/bioconda.png
-   :class: hero-logo
-   :alt: Bioconda
+.. container:: hero-section
 
-**Bioconda** is a distribution of bioinformatics software for the
-`conda <https://conda.io>`_ package manager.
+   .. image:: images/bioconda.png
+      :class: hero-logo
+      :alt: Bioconda
 
-.. raw:: html
+   .. raw:: html
 
-   <div class="hero-cta">
-     <a href="conda-package_index.html" class="btn hero-btn-primary">
-       <i class="fa-solid fa-boxes-stacked me-2"></i>Explore Packages
-     </a>
-     <a href="contributor/index.html" class="btn hero-btn-secondary">
-       <i class="fa-solid fa-code-pull-request me-2"></i>Contribute Packages
-     </a>
-   </div>
+      <h1 class="hero-title">A distribution of bioinformatics software</h1>
+      <p class="hero-subtitle">
+        Specializing in bioinformatics software for the <strong>Conda</strong> package manager.
+      </p>
+      <div class="hero-cta">
+        <a href="conda-package_index.html" class="btn hero-btn-primary">
+          <i class="fa-solid fa-boxes-stacked me-2"></i>Explore Packages
+        </a>
+        <a href="contributor/index.html" class="btn hero-btn-secondary">
+          <i class="fa-solid fa-code-pull-request me-2"></i>Contribute Packages
+        </a>
+      </div>
 
 **NOTE**: *Bioconda supports only Linux (64-bit and AArch64) and macOS (x86_64 and ARM64)*
 
