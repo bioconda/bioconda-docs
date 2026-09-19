@@ -1,0 +1,613 @@
+/**
+ * Bioconda Package Index - Modern crates.io Inspired Styles
+ * Fully integrated with pydata-sphinx-theme light & dark modes
+ */
+
+[x-cloak] {
+    display: none !important;
+}
+
+:root {
+    --bpc-card-bg: var(--pst-color-surface, #ffffff);
+    --bpc-card-border: var(--pst-color-border, #e2e8f0);
+    --bpc-card-hover-border: var(--pst-color-primary, #3273dc);
+    --bpc-text-main: var(--pst-color-text-base, #1e293b);
+    --bpc-text-muted: var(--pst-color-text-muted, #64748b);
+    --bpc-bg-subtle: rgba(148, 163, 184, 0.08);
+
+    /* Platform color palettes - Light */
+    --bpc-noarch-bg: #dcfce7;
+    --bpc-noarch-fg: #15803d;
+    --bpc-noarch-border: #bbf7d0;
+
+    --bpc-linux-bg: #e0f2fe;
+    --bpc-linux-fg: #0369a1;
+    --bpc-linux-border: #bae6fd;
+
+    --bpc-aarch-bg: #f3e8ff;
+    --bpc-aarch-fg: #7e22ce;
+    --bpc-aarch-border: #e9d5ff;
+
+    --bpc-osx-bg: #fef3c7;
+    --bpc-osx-fg: #b45309;
+    --bpc-osx-border: #fde68a;
+
+    --bpc-arm-bg: #ffedd5;
+    --bpc-arm-fg: #c2410c;
+    --bpc-arm-border: #fed7aa;
+}
+
+html[data-theme="dark"] {
+    --bpc-card-bg: var(--pst-color-surface, #1e2127);
+    --bpc-card-border: var(--pst-color-border, #333842);
+    --bpc-bg-subtle: rgba(255, 255, 255, 0.05);
+
+    /* Platform color palettes - Dark */
+    --bpc-noarch-bg: rgba(34, 197, 94, 0.16);
+    --bpc-noarch-fg: #4ade80;
+    --bpc-noarch-border: rgba(34, 197, 94, 0.3);
+
+    --bpc-linux-bg: rgba(14, 165, 233, 0.16);
+    --bpc-linux-fg: #38bdf8;
+    --bpc-linux-border: rgba(14, 165, 233, 0.3);
+
+    --bpc-aarch-bg: rgba(168, 85, 247, 0.16);
+    --bpc-aarch-fg: #c084fc;
+    --bpc-aarch-border: rgba(168, 85, 247, 0.3);
+
+    --bpc-osx-bg: rgba(245, 158, 11, 0.16);
+    --bpc-osx-fg: #fbbf24;
+    --bpc-osx-border: rgba(245, 158, 11, 0.3);
+
+    --bpc-arm-bg: rgba(249, 115, 22, 0.16);
+    --bpc-arm-fg: #fb923c;
+    --bpc-arm-border: rgba(249, 115, 22, 0.3);
+}
+
+/* Container */
+.bioconda-index-container {
+    max-width: 100%;
+    margin: 1.5rem 0 3rem 0;
+    font-family: inherit;
+    color: var(--bpc-text-main);
+}
+
+/* Hero & Header Section */
+.bioconda-hero {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--bpc-card-border);
+}
+
+.bioconda-hero-title {
+    font-size: 2.1rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.02em;
+}
+
+.bioconda-hero-subtitle {
+    font-size: 1.05rem;
+    color: var(--bpc-text-muted);
+    margin-bottom: 1.5rem;
+}
+
+/* Stats Cards Grid */
+.bioconda-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+.bioconda-stat-card {
+    background: var(--bpc-card-bg);
+    border: 1px solid var(--bpc-card-border);
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    cursor: pointer;
+    transition: all 0.18s ease-in-out;
+    user-select: none;
+}
+
+.bioconda-stat-card:hover {
+    border-color: var(--bpc-card-hover-border);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.bioconda-stat-card.active {
+    border-color: var(--pst-color-primary, #3273dc);
+    background: var(--bpc-bg-subtle);
+    box-shadow: 0 0 0 2px var(--pst-color-primary, #3273dc);
+}
+
+.bioconda-stat-icon {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 8px;
+    background: var(--bpc-bg-subtle);
+}
+
+.bioconda-stat-val {
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.bioconda-stat-ratio {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--bpc-text-muted);
+    margin-left: 0.25rem;
+}
+
+.bioconda-stat-label {
+    font-size: 0.78rem;
+    color: var(--bpc-text-muted);
+    margin-top: 0.15rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+}
+
+/* Platform Filter Bar */
+.bioconda-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.filter-bar-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--bpc-text-muted);
+    margin-right: 0.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.filter-pill {
+    background: var(--bpc-card-bg);
+    border: 1px solid var(--bpc-card-border);
+    color: var(--bpc-text-main);
+    border-radius: 9999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.filter-pill:hover {
+    border-color: var(--bpc-card-hover-border);
+    background: var(--bpc-bg-subtle);
+}
+
+.filter-pill.active {
+    background: var(--pst-color-primary, #3273dc) !important;
+    border-color: var(--pst-color-primary, #3273dc) !important;
+    color: #ffffff !important;
+}
+
+/* Search Toolbar */
+.bioconda-toolbar {
+    margin-bottom: 1.5rem;
+}
+
+.bioconda-search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.bioconda-search-icon {
+    position: absolute;
+    left: 1.1rem;
+    color: var(--bpc-text-muted);
+    font-size: 1.05rem;
+    pointer-events: none;
+}
+
+.bioconda-search-input {
+    width: 100%;
+    padding: 0.8rem 4rem 0.8rem 2.8rem;
+    font-size: 1.05rem;
+    border: 1.5px solid var(--bpc-card-border);
+    border-radius: 10px;
+    background: var(--bpc-card-bg);
+    color: var(--bpc-text-main);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.bioconda-search-input:focus {
+    outline: none;
+    border-color: var(--pst-color-primary, #3273dc);
+    box-shadow: 0 0 0 3px rgba(50, 115, 220, 0.18);
+}
+
+.bioconda-search-clear {
+    position: absolute;
+    right: 2.8rem;
+    background: none;
+    border: none;
+    color: var(--bpc-text-muted);
+    cursor: pointer;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+}
+
+.bioconda-search-clear:hover {
+    color: var(--bpc-text-main);
+}
+
+.bioconda-kbd-hint {
+    position: absolute;
+    right: 0.85rem;
+    background: var(--bpc-bg-subtle);
+    border: 1px solid var(--bpc-card-border);
+    color: var(--bpc-text-muted);
+    padding: 0.15rem 0.45rem;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    font-family: inherit;
+    pointer-events: none;
+}
+
+/* Controls Bar (Sort, Counter, PM Toggle) */
+.bioconda-controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0.25rem;
+}
+
+.bioconda-result-count {
+    font-size: 0.92rem;
+    color: var(--bpc-text-muted);
+    font-weight: 500;
+}
+
+.bioconda-result-count strong {
+    color: var(--bpc-text-main);
+}
+
+.bioconda-actions-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Control Selects */
+.bioconda-select {
+    background: var(--bpc-card-bg);
+    border: 1px solid var(--bpc-card-border);
+    color: var(--bpc-text-main);
+    border-radius: 6px;
+    padding: 0.38rem 0.75rem;
+    font-size: 0.85rem;
+    cursor: pointer;
+    outline: none;
+}
+
+.bioconda-select:focus {
+    border-color: var(--pst-color-primary, #3273dc);
+}
+
+/* Package Manager Toggle Switch */
+.bioconda-pm-toggle {
+    display: inline-flex;
+    background: var(--bpc-bg-subtle);
+    border: 1px solid var(--bpc-card-border);
+    border-radius: 7px;
+    padding: 2px;
+}
+
+.bioconda-pm-btn {
+    border: none;
+    background: transparent;
+    color: var(--bpc-text-muted);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.28rem 0.65rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.bioconda-pm-btn.active {
+    background: var(--bpc-card-bg);
+    color: var(--pst-color-primary, #3273dc);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Package Cards List */
+.bioconda-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+/* Package Card */
+.bioconda-card {
+    background: var(--bpc-card-bg);
+    border: 1px solid var(--bpc-card-border);
+    border-radius: 10px;
+    padding: 1.15rem 1.35rem;
+    transition: all 0.18s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.bioconda-card:hover {
+    border-color: var(--bpc-card-hover-border);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+/* Card Header */
+.bioconda-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.bioconda-card-title-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.6rem;
+}
+
+.bioconda-card-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--pst-color-primary, #3273dc);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+}
+
+.bioconda-card-name:hover {
+    text-decoration: underline;
+}
+
+.bioconda-badge-version {
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: var(--bpc-bg-subtle);
+    border: 1px solid var(--bpc-card-border);
+    color: var(--bpc-text-main);
+    padding: 0.15rem 0.5rem;
+    border-radius: 9999px;
+}
+
+.bioconda-badge-license {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--bpc-text-muted);
+    background: var(--bpc-bg-subtle);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--bpc-card-border);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Card Copy Button */
+.bioconda-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: var(--bpc-bg-subtle);
+    border: 1px solid var(--bpc-card-border);
+    color: var(--bpc-text-main);
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.bioconda-copy-btn:hover {
+    border-color: var(--pst-color-primary, #3273dc);
+    background: var(--bpc-card-bg);
+}
+
+.bioconda-copy-btn.copied {
+    border-color: #22c55e !important;
+    background: rgba(34, 197, 94, 0.1) !important;
+    color: #16a34a !important;
+}
+
+/* Card Body (Summary) */
+.bioconda-card-body {
+    padding: 0.1rem 0;
+}
+
+.bioconda-card-summary {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--bpc-text-main);
+    margin: 0;
+}
+
+/* Card Footer (Platforms & Links) */
+.bioconda-card-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid var(--bpc-bg-subtle);
+}
+
+.bioconda-platform-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.bioconda-platform-pill {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.12rem 0.55rem;
+    border-radius: 9999px;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+}
+
+.platform-noarch {
+    background: var(--bpc-noarch-bg);
+    color: var(--bpc-noarch-fg);
+    border: 1px solid var(--bpc-noarch-border);
+}
+
+.platform-linux-64 {
+    background: var(--bpc-linux-bg);
+    color: var(--bpc-linux-fg);
+    border: 1px solid var(--bpc-linux-border);
+}
+
+.platform-linux-aarch64 {
+    background: var(--bpc-aarch-bg);
+    color: var(--bpc-aarch-fg);
+    border: 1px solid var(--bpc-aarch-border);
+}
+
+.platform-osx-64 {
+    background: var(--bpc-osx-bg);
+    color: var(--bpc-osx-fg);
+    border: 1px solid var(--bpc-osx-border);
+}
+
+.platform-osx-arm64 {
+    background: var(--bpc-arm-bg);
+    color: var(--bpc-arm-fg);
+    border: 1px solid var(--bpc-arm-border);
+}
+
+/* Card Links */
+.bioconda-card-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.bioconda-link {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--bpc-text-muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color 0.15s ease;
+}
+
+.bioconda-link:hover {
+    color: var(--pst-color-primary, #3273dc);
+    text-decoration: underline;
+}
+
+/* Empty State */
+.bioconda-empty-state {
+    text-align: center;
+    padding: 3.5rem 1rem;
+    background: var(--bpc-card-bg);
+    border: 1px dashed var(--bpc-card-border);
+    border-radius: 12px;
+    margin: 1.5rem 0;
+}
+
+.bioconda-empty-icon {
+    font-size: 2.8rem;
+    color: var(--bpc-text-muted);
+    margin-bottom: 0.8rem;
+}
+
+.bioconda-empty-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+.bioconda-empty-desc {
+    font-size: 0.95rem;
+    color: var(--bpc-text-muted);
+    margin-bottom: 1.2rem;
+}
+
+/* Pagination */
+.bioconda-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 2rem;
+    user-select: none;
+}
+
+.bioconda-page-btn {
+    background: var(--bpc-card-bg);
+    border: 1px solid var(--bpc-card-border);
+    color: var(--bpc-text-main);
+    padding: 0.38rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    min-width: 2.2rem;
+    text-align: center;
+}
+
+.bioconda-page-btn:hover:not(:disabled) {
+    border-color: var(--bpc-card-hover-border);
+    background: var(--bpc-bg-subtle);
+}
+
+.bioconda-page-btn.active {
+    background: var(--pst-color-primary, #3273dc) !important;
+    border-color: var(--pst-color-primary, #3273dc) !important;
+    color: #ffffff !important;
+}
+
+.bioconda-page-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.bioconda-page-ellipsis {
+    color: var(--bpc-text-muted);
+    padding: 0 0.3rem;
+}

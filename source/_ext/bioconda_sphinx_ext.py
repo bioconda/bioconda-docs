@@ -403,14 +403,31 @@ class PackageIndex(Index):
                 continue
 
             recipe_details = recipes_details.get(name, {})
-            
-            # TODO: Add meaningful info for extra/qualifier/description
-            #       fields, e.g., latest package version.
+            platforms = recipe_details.get('platforms', [])
+            if isinstance(platforms, str):
+                platforms = [p.strip() for p in platforms.split(',') if p.strip()]
+
             content.append({
                 "name": name,
-                "platforms": ', '.join(recipe_details.get('platforms', [])),
-                "latest_version": recipe_details.get('latest_version')
+                "docname": docname,
+                "platforms": platforms,
+                "latest_version": recipe_details.get('latest_version') or '',
+                "summary": recipe_details.get('summary', ''),
+                "home": recipe_details.get('home', ''),
+                "license": recipe_details.get('license', ''),
+                "doc_url": recipe_details.get('doc_url', ''),
+                "dev_url": recipe_details.get('dev_url', ''),
             })
+
+        # Also write static JSON file if builder outdir is available
+        try:
+            import json
+            outdir = self.domain.env.app.builder.outdir
+            json_path = op.join(outdir, 'packages-index.json')
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump(content, f)
+        except Exception as e:
+            logger.debug("Could not write packages-index.json: %s", e)
 
         collapse = True
         return content, collapse
@@ -621,7 +638,7 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
                         else:
                             return platform
                     platforms = map(mapper, platforms)
-                recipe_details['platforms'] = list(platforms)
+                recipe_details['platforms'] = sorted(list(platforms))
 
                 recipe_details['latest_version'] = latest_version
                 # recipe_details['build_number'] = sorted_versions[0][1]
@@ -635,9 +652,30 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
         })
 
     recipe_extra = recipe.get('extra', None)
+    about = recipe.get('about', None) or {}
+
+    summary = about.get('summary') or ''
+    if summary:
+        summary = ' '.join(str(summary).split())
+    else:
+        summary = ''
+
+    home = about.get('home') or ''
+    license_val = about.get('license') or about.get('license_family') or ''
+    if license_val:
+        license_val = str(license_val).strip()
+    else:
+        license_val = ''
+
+    recipe_details['summary'] = summary
+    recipe_details['home'] = home
+    recipe_details['license'] = license_val
+    recipe_details['doc_url'] = about.get('doc_url') or ''
+    recipe_details['dev_url'] = about.get('dev_url') or ''
+
     template_options = {
         'name': recipe.name,
-        'about': recipe.get('about', None),
+        'about': about,
         'extra': recipe_extra,
         'recipe': recipe,
         'packages': packages,
@@ -649,6 +687,15 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
         recipe_details['additional-platforms'] = recipe_extra.get('additional-platforms', [])
 
     recipes_details[recipe.name] = recipe_details
+    for package in outputs:
+        if package != recipe.name:
+            out_details = recipes_details.get(package, {}).copy()
+            out_details.setdefault('summary', summary)
+            out_details.setdefault('home', home)
+            out_details.setdefault('license', license_val)
+            out_details.setdefault('platforms', recipe_details.get('platforms', []))
+            out_details.setdefault('latest_version', recipe_details.get('latest_version', ''))
+            recipes_details[package] = out_details
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
     return [output_file]
@@ -728,10 +775,12 @@ def generate_recipes(app):
                                  folder)
                     continue
                 _recipes.extend(generate_readme(recipe_basedir, output_dir, folder, repodata, renderer))
-            return _recipes
+            return _recipes, recipes_details
 
         def merge_chunk(_chunk, res):
-            recipes.extend(res)
+            chunk_recipes, chunk_details = res
+            recipes.extend(chunk_recipes)
+            recipes_details.update(chunk_details)
 
         for chunk in status_iterator(
                 chunks,

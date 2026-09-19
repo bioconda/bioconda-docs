@@ -1,150 +1,320 @@
-{# Template for domain indices (module index, ...). #}
+{# Template for Bioconda Package Index #}
 {%- extends "layout.html" %}
 {% set title = indextitle %}
 {% block extrahead %}
 {{ super() }}
-{% if not embedded and collapse_index %}
-    <script>
-      DOCUMENTATION_OPTIONS.COLLAPSE_INDEX = true;
-    </script>
-{% endif %}
-  <link rel="stylesheet" href="https://cdn.datatables.net/2.3.8/css/dataTables.bootstrap5.min.css" />
-  <link rel="stylesheet" href="https://cdn.datatables.net/rowgroup/1.6.0/css/rowGroup.bootstrap5.min.css"/>
-    
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/2.3.8/js/dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/2.3.8/js/dataTables.bootstrap5.min.js"></script>
-  <script src="https://cdn.datatables.net/rowgroup/1.6.0/js/dataTables.rowGroup.min.js"></script>
-  <script src="https://cdn.datatables.net/rowgroup/1.6.0/js/rowGroup.bootstrap5.min.js"></script>
+  <link rel="stylesheet" href="{{ pathto('_static/package-index.css', 1) }}"/>
+  <script defer src="{{ pathto('_static/vendor/alpine.min.js', 1) }}"></script>
+  <script defer src="{{ pathto('_static/package-index.js', 1) }}"></script>
 {% endblock %}
+
 {% block body %}
 
-   {%- set groupid = idgen() %}
+<div class="bioconda-index-container" x-data="biocondaPackageRegistry()" x-cloak>
 
-   <h1>{{ indextitle }}</h1>
-     <div class="table-responsive my-4" style="max-width: 500px;">
-    <table class="table table-striped table-bordered table-hover align-middle">
-     <thead>
-       <tr class="table-dark">
-         <th>Recipes</th>
-         <th>Count</th>
-         <th>Ratio</th>
-       </tr>
-     </thead>
-     <tbody>
-       <tr>
-         <td>Total</td>
-         <td id="total-count" style="text-align: center; font-weight: bold;"></td>
-         <td></td>
-       </tr>
-       <tr>
-         <td>noarch</td>
-         <td id="noarch-count" style="text-align: center;"></td>
-         <td><span id="noarch-ratio"></span>%</td>
-       </tr>
-       <tr>
-         <td>linux-64</td>
-         <td id="linux-64-count" style="text-align: center;"></td>
-         <td><span id="linux-64-ratio"></span>%</td>
-       </tr>
-       <tr>
-         <td>linux-aarch64</td>
-         <td id="linux-aarch64-count" style="text-align: center;"></td>
-         <td><span id="linux-aarch64-ratio"></span>%</td>
-       </tr>
-       <tr>
-         <td>osx-64:</td>
-         <td id="osx-64-count" style="text-align: center;"></td>
-         <td><span id="osx-64-ratio"></span>%</td>
-       </tr>
-       <tr>
-         <td>osx-arm64:</td>
-         <td id="osx-arm64-count" style="text-align: center;"></td>
-         <td><span id="osx-arm64-ratio"></span>%</td>
-       </tr>
-     </tbody>
-    </table>
-   </div>
-   
-   <div class="table-responsive my-5">
-    <table class="table table-striped table-bordered table-hover align-middle indextable modindextable" id="recipes-table" style="width: 100%;"></table>
-   </div>
-   
-   <script>
+  <!-- Hero Header & Global Metrics -->
+  <div class="bioconda-hero">
+    <h1 class="bioconda-hero-title">{{ indextitle }}</h1>
+    <p class="bioconda-hero-subtitle">
+      Browse and search across <strong x-text="stats.total"></strong> scientific software packages maintained by the Bioconda community.
+    </p>
 
-    let dataset = [
-        {%- for (entry) in content %}
-        ["{{ entry.name }}", "{{ entry.latest_version }}", "{{ entry.platforms }}"]{%- if not loop.last -%}{{ "," }}{%- endif -%} 
-        {%- endfor %}
-    ];
+    <!-- Stats Metric Cards -->
+    <div class="bioconda-stats-grid">
+      <div class="bioconda-stat-card"
+           :class="{ 'active': platform === 'all' }"
+           @click="setPlatform('all')"
+           title="Click to view all packages">
+        <div class="bioconda-stat-icon text-primary"><i class="fa fa-cubes"></i></div>
+        <div>
+          <div class="bioconda-stat-val" x-text="stats.total"></div>
+          <div class="bioconda-stat-label">Total Packages</div>
+        </div>
+      </div>
 
-    let linux64Count = 0;
-    let linuxAarch64Count = 0;
-    let osx64Count = 0;
-    let osxArm64Count = 0;
-    let noarchCount = 0;
-    for (let i=0; i<dataset.length; i++) {
-      let entry = dataset[i];
-      if (entry[2].includes("linux-64")) {
-        linux64Count += 1;
-      }
-      if (entry[2].includes("linux-aarch64")) {
-        linuxAarch64Count += 1;
-      }
-      if (entry[2].includes("osx-64")) {
-        osx64Count += 1;
-      }
-      if (entry[2].includes("osx-arm64")) {
-        osxArm64Count += 1;
-      }
-      if (entry[2].includes("noarch")) {
-        noarchCount += 1;
-      }
-    }
-    let totalCount = dataset.length;
-    document.getElementById("noarch-count").textContent = noarchCount;
-    document.getElementById("noarch-ratio").textContent = (noarchCount / totalCount * 100).toFixed(2);
-    document.getElementById("linux-64-count").textContent = linux64Count;
-    document.getElementById("linux-64-ratio").textContent = (linux64Count / totalCount * 100).toFixed(2);
-    document.getElementById("linux-aarch64-count").textContent = linuxAarch64Count;
-    document.getElementById("linux-aarch64-ratio").textContent = (linuxAarch64Count / totalCount * 100).toFixed(2);
-    document.getElementById("osx-64-count").textContent = osx64Count;
-    document.getElementById("osx-64-ratio").textContent = (osx64Count / totalCount * 100).toFixed(2);
-    document.getElementById("osx-arm64-count").textContent = osxArm64Count;
-    document.getElementById("osx-arm64-ratio").textContent = (osxArm64Count / totalCount * 100).toFixed(2);
-    document.getElementById("total-count").textContent = totalCount;
+      <div class="bioconda-stat-card"
+           :class="{ 'active': platform === 'noarch' }"
+           @click="setPlatform('noarch')"
+           title="Click to filter by noarch packages">
+        <div class="bioconda-stat-icon text-success"><i class="fa fa-leaf"></i></div>
+        <div>
+          <div class="bioconda-stat-val">
+            <span x-text="stats.noarch"></span>
+            <span class="bioconda-stat-ratio" x-text="'(' + stats.noarchRatio + '%)'"></span>
+          </div>
+          <div class="bioconda-stat-label">noarch (Python / R)</div>
+        </div>
+      </div>
 
-    let table = new DataTable('#recipes-table', {
-      data: dataset,
-      columns: [
-        { title: "Name" },
-        {
-            title: "Latest version",
-            orderable: false
-        },
-        {
-            title: "Platforms",
-            orderable: false
-        },
-      ],
-      displayLength: 50,
-      lengthMenu: [
-        [10, 50, 100, -1],
-        [10, 50, 100, 'All']
-      ],
-      columnDefs: [
-        {
-            render: (data, type, row) => {
-              return '<a href="./recipes/' + data + '/README.html#package-'+data+'"><code class="xref">' + data + '</code></a>';
-            },
-            targets: 0
-        },
-      ],
-      rowGroup: {
-        enable: true,
-        dataSrc: (row) => row[0].charAt(0).toLowerCase()
-      }
-    });
-   </script>
+      <div class="bioconda-stat-card"
+           :class="{ 'active': platform === 'linux-64' }"
+           @click="setPlatform('linux-64')"
+           title="Click to filter by linux-64 builds">
+        <div class="bioconda-stat-icon text-info"><i class="fa fa-linux"></i></div>
+        <div>
+          <div class="bioconda-stat-val">
+            <span x-text="stats.linux64"></span>
+            <span class="bioconda-stat-ratio" x-text="'(' + stats.linux64Ratio + '%)'"></span>
+          </div>
+          <div class="bioconda-stat-label">Linux x86_64</div>
+        </div>
+      </div>
+
+      <div class="bioconda-stat-card"
+           :class="{ 'active': platform === 'linux-aarch64' }"
+           @click="setPlatform('linux-aarch64')"
+           title="Click to filter by linux-aarch64 builds">
+        <div class="bioconda-stat-icon" style="color: #9333ea;"><i class="fa fa-microchip"></i></div>
+        <div>
+          <div class="bioconda-stat-val">
+            <span x-text="stats.linuxAarch64"></span>
+            <span class="bioconda-stat-ratio" x-text="'(' + stats.linuxAarch64Ratio + '%)'"></span>
+          </div>
+          <div class="bioconda-stat-label">Linux ARM64</div>
+        </div>
+      </div>
+
+      <div class="bioconda-stat-card"
+           :class="{ 'active': platform === 'osx-arm64' }"
+           @click="setPlatform('osx-arm64')"
+           title="Click to filter by Apple Silicon builds">
+        <div class="bioconda-stat-icon" style="color: #ea580c;"><i class="fa fa-apple"></i></div>
+        <div>
+          <div class="bioconda-stat-val">
+            <span x-text="stats.osxArm64"></span>
+            <span class="bioconda-stat-ratio" x-text="'(' + stats.osxArm64Ratio + '%)'"></span>
+          </div>
+          <div class="bioconda-stat-label">Apple Silicon</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Platform Filters -->
+    <div class="bioconda-filter-bar">
+      <span class="filter-bar-label"><i class="fa fa-filter"></i> Architecture:</span>
+      <button type="button" class="filter-pill" :class="{ 'active': platform === 'all' }" @click="setPlatform('all')">
+        All (<span x-text="stats.total"></span>)
+      </button>
+      <button type="button" class="filter-pill" :class="{ 'active': platform === 'noarch' }" @click="setPlatform('noarch')">
+        🟢 noarch (<span x-text="stats.noarch"></span>)
+      </button>
+      <button type="button" class="filter-pill" :class="{ 'active': platform === 'linux-64' }" @click="setPlatform('linux-64')">
+        🔵 linux-64 (<span x-text="stats.linux64"></span>)
+      </button>
+      <button type="button" class="filter-pill" :class="{ 'active': platform === 'linux-aarch64' }" @click="setPlatform('linux-aarch64')">
+        🟣 linux-aarch64 (<span x-text="stats.linuxAarch64"></span>)
+      </button>
+      <button type="button" class="filter-pill" :class="{ 'active': platform === 'osx-64' }" @click="setPlatform('osx-64')">
+        🟡 osx-64 (<span x-text="stats.osx64"></span>)
+      </button>
+      <button type="button" class="filter-pill" :class="{ 'active': platform === 'osx-arm64' }" @click="setPlatform('osx-arm64')">
+        🟠 osx-arm64 (<span x-text="stats.osxArm64"></span>)
+      </button>
+    </div>
+  </div>
+
+  <!-- Search and Controls Toolbar -->
+  <div class="bioconda-toolbar" id="packages-search-toolbar">
+    <div class="bioconda-search-wrapper">
+      <i class="fa fa-search bioconda-search-icon"></i>
+      <input type="text"
+             id="bioconda-search-input"
+             class="bioconda-search-input"
+             x-model="query"
+             placeholder="Search packages by name, description, license, or keyword... (Press '/' to focus)"
+             autocomplete="off"
+             spellcheck="false"
+             @keydown.escape="query = ''">
+      <button type="button"
+              class="bioconda-search-clear"
+              x-show="query.length > 0"
+              @click="query = ''"
+              title="Clear search"
+              style="display: none;">
+        <i class="fa fa-times"></i>
+      </button>
+      <kbd class="bioconda-kbd-hint">/</kbd>
+    </div>
+
+    <div class="bioconda-controls-bar">
+      <!-- Result Counter -->
+      <div class="bioconda-result-count">
+        <template x-if="totalFiltered > 0">
+          <span>
+            Showing <strong x-text="(page - 1) * perPage + 1"></strong>–<strong x-text="Math.min(page * perPage, totalFiltered)"></strong> of <strong x-text="totalFiltered"></strong> packages
+            <span x-show="totalFiltered !== stats.total" class="text-muted" style="display: none;">(filtered from <span x-text="stats.total"></span>)</span>
+          </span>
+        </template>
+        <template x-if="totalFiltered === 0">
+          <span>No matching packages</span>
+        </template>
+      </div>
+
+      <!-- Controls: Sort, Per-Page, and Package Manager Toggle -->
+      <div class="bioconda-actions-group">
+        <!-- Sort Order -->
+        <select class="bioconda-select" x-model="sortBy" title="Sort packages">
+          <option value="name-asc">Name (A → Z)</option>
+          <option value="name-desc">Name (Z → A)</option>
+          <option value="platforms-desc">Most Platforms</option>
+        </select>
+
+        <!-- Per Page Limit -->
+        <select class="bioconda-select" x-model.number="perPage" title="Packages per page">
+          <option :value="25">25 per page</option>
+          <option :value="50">50 per page</option>
+          <option :value="100">100 per page</option>
+        </select>
+
+        <!-- Package Manager Switcher (Pixi / Conda) -->
+        <div class="bioconda-pm-toggle" title="Default package manager for copy button">
+          <button type="button"
+                  class="bioconda-pm-btn"
+                  :class="{ 'active': packageManager === 'pixi' }"
+                  @click="packageManager = 'pixi'">
+            pixi
+          </button>
+          <button type="button"
+                  class="bioconda-pm-btn"
+                  :class="{ 'active': packageManager === 'conda' }"
+                  @click="packageManager = 'conda'">
+            conda
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Package Cards List -->
+  <div class="bioconda-cards-list">
+    <template x-for="pkg in paginatedPackages" :key="pkg.name">
+      <article class="bioconda-card">
+        <!-- Header: Name, Version, License & Copy Button -->
+        <div class="bioconda-card-header">
+          <div class="bioconda-card-title-group">
+            <a :href="'./' + (pkg.docname || ('recipes/' + pkg.name + '/README')) + '.html#package-' + pkg.name"
+               class="bioconda-card-name"
+               x-text="pkg.name">
+            </a>
+            <span class="bioconda-badge-version" x-text="pkg.latest_version ? 'v' + pkg.latest_version : 'latest'"></span>
+            <span class="bioconda-badge-license" x-show="pkg.license" x-text="pkg.license" style="display: none;"></span>
+          </div>
+
+          <button type="button"
+                  class="bioconda-copy-btn"
+                  :class="{ 'copied': copiedPackage === pkg.name }"
+                  @click="copyInstall(pkg)"
+                  :title="'Copy installation command: ' + getInstallCommand(pkg.name)">
+            <template x-if="copiedPackage !== pkg.name">
+              <span>
+                <i class="fa fa-clipboard"></i>
+                <span x-text="getInstallCommand(pkg.name)"></span>
+              </span>
+            </template>
+            <template x-if="copiedPackage === pkg.name">
+              <span>
+                <i class="fa fa-check"></i>
+                <span>Copied!</span>
+              </span>
+            </template>
+          </button>
+        </div>
+
+        <!-- Body: Description / Summary -->
+        <div class="bioconda-card-body">
+          <p class="bioconda-card-summary" x-text="pkg.summary || 'Bioconda package recipe for ' + pkg.name"></p>
+        </div>
+
+        <!-- Footer: Platforms & Quick Links -->
+        <div class="bioconda-card-footer">
+          <div class="bioconda-platform-group">
+            <template x-for="plat in pkg.platforms" :key="plat">
+              <span :class="'bioconda-platform-pill platform-' + plat" x-text="plat"></span>
+            </template>
+            <span x-show="!pkg.platforms || pkg.platforms.length === 0" class="bioconda-platform-pill text-muted" style="display: none;">no builds</span>
+          </div>
+
+          <div class="bioconda-card-links">
+            <a x-show="pkg.home"
+               :href="pkg.home"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="bioconda-link"
+               style="display: none;">
+              <i class="fa fa-external-link"></i> Homepage
+            </a>
+            <a :href="'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/' + pkg.name"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="bioconda-link">
+              <i class="fa fa-github"></i> Recipe
+            </a>
+            <a x-show="pkg.doc_url"
+               :href="pkg.doc_url"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="bioconda-link"
+               style="display: none;">
+              <i class="fa fa-book"></i> Documentation
+            </a>
+          </div>
+        </div>
+      </article>
+    </template>
+  </div>
+
+  <!-- Empty State -->
+  <div class="bioconda-empty-state" x-show="totalFiltered === 0" style="display: none;">
+    <div class="bioconda-empty-icon"><i class="fa fa-search-minus"></i></div>
+    <div class="bioconda-empty-title">No matching packages found</div>
+    <div class="bioconda-empty-desc">
+      Try searching for another tool name, keyword, or clearing the selected architecture filter.
+    </div>
+    <button type="button" class="btn btn-outline-primary btn-sm" @click="clearFilters()">
+      <i class="fa fa-refresh"></i> Reset all filters
+    </button>
+  </div>
+
+  <!-- Pagination Controls -->
+  <nav class="bioconda-pagination" x-show="totalPages > 1" aria-label="Package navigation" style="display: none;">
+    <button type="button"
+            class="bioconda-page-btn"
+            :disabled="page <= 1"
+            @click="setPage(page - 1)"
+            aria-label="Previous page">
+      <i class="fa fa-chevron-left"></i>
+    </button>
+
+    <template x-for="p in paginationRange" :key="p">
+      <div>
+        <template x-if="p === '...'">
+          <span class="bioconda-page-ellipsis">…</span>
+        </template>
+        <template x-if="p !== '...'">
+          <button type="button"
+                  class="bioconda-page-btn"
+                  :class="{ 'active': page === p }"
+                  @click="setPage(p)"
+                  x-text="p">
+          </button>
+        </template>
+      </div>
+    </template>
+
+    <button type="button"
+            class="bioconda-page-btn"
+            :disabled="page >= totalPages"
+            @click="setPage(page + 1)"
+            aria-label="Next page">
+      <i class="fa fa-chevron-right"></i>
+    </button>
+  </nav>
+
+</div>
+
+<!-- JSON Dataset embedded safely by Sphinx at build time -->
+<script id="bioconda-packages-data" type="application/json">
+{{ content | tojson }}
+</script>
 
 {% endblock %}
