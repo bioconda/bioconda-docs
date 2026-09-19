@@ -332,3 +332,172 @@ html[data-theme="dark"] .table a {
 .table th, .table td {
     padding: 0.85rem 1.25rem !important;
 }
+
+/* ==========================================================================
+   Search Dialog & Results Styling (Clean, separated modern layout)
+   ========================================================================== */
+
+/* Search Dialog (modal) - modern command palette style */
+#pst-search-dialog[open] {
+    margin: 10vh auto 0;
+    width: 90%;
+    max-width: 680px;
+    max-height: 80vh;
+    padding: 0;
+    border: 1px solid var(--pst-color-border);
+    border-radius: 12px;
+    background-color: var(--pst-color-background);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#pst-search-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+/* Modal search input bar */
+#pst-search-dialog form.bd-search {
+    border: none;
+    border-bottom: 1px solid var(--pst-color-border);
+    border-radius: 0;
+    padding: 0.85rem 1.15rem;
+    background-color: var(--pst-color-background);
+    box-shadow: none !important;
+}
+
+#pst-search-dialog form.bd-search .fa-magnifying-glass {
+    left: 1.15rem;
+    font-size: 1.1rem;
+    color: var(--pst-color-primary, #3eb049);
+}
+
+#pst-search-dialog form.bd-search input.form-control {
+    padding-left: 2rem;
+    font-size: 1.05rem;
+}
+
+/* Search results container inside dialog */
+#pst-search-dialog #search-results {
+    padding: 0.85rem 1.15rem 1.15rem;
+    background-color: var(--pst-color-background);
+    overflow-y: auto;
+    max-height: calc(80vh - 70px);
+}
+
+#pst-search-dialog #search-results.empty {
+    display: none;
+}
+
+/* Hide Sphinx's large h2 inside the search modal */
+#pst-search-dialog #search-results > h2 {
+    display: none;
+}
+
+/* Search summary text (e.g. "Search finished, found X pages") */
+#pst-search-dialog #search-results p.search-summary,
+.bd-search-container div#search-results p.search-summary {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--pst-color-text-muted);
+    margin: 0.25rem 0 0.85rem;
+}
+
+/* The search results list */
+#pst-search-dialog ul.search,
+.bd-search-container ul.search {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+/* Result item: Card-like separation with rounded corners and clean hover */
+#pst-search-dialog ul.search li,
+.bd-search-container ul.search li {
+    background-color: var(--pst-color-surface);
+    border: 1px solid var(--pst-color-border);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    margin: 0;
+    list-style-type: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+#pst-search-dialog ul.search li:hover,
+#pst-search-dialog ul.search li:focus-within,
+.bd-search-container ul.search li:hover,
+.bd-search-container ul.search li:focus-within {
+    border-color: var(--pst-color-primary, #3eb049);
+    background-color: var(--pst-color-background);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+html[data-theme="dark"] #pst-search-dialog ul.search li:hover,
+html[data-theme="dark"] #pst-search-dialog ul.search li:focus-within,
+html[data-theme="dark"] .bd-search-container ul.search li:hover,
+html[data-theme="dark"] .bd-search-container ul.search li:focus-within {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* Result item title link */
+#pst-search-dialog ul.search li > a,
+.bd-search-container ul.search li > a {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--pst-color-text-base);
+    text-decoration: none;
+    margin-bottom: 0.3rem;
+}
+
+#pst-search-dialog ul.search li:hover > a,
+.bd-search-container ul.search li:hover > a {
+    color: var(--pst-color-primary, #3eb049);
+    text-decoration: none;
+}
+
+/* Snippet context / excerpt preview */
+#pst-search-dialog ul.search li p.context,
+.bd-search-container ul.search li p.context {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--pst-color-text-muted);
+    margin: 0;
+}
+
+/* Highlighted search terms inside title & excerpt */
+#pst-search-dialog .highlighted,
+.bd-search-container .highlighted {
+    background-color: rgba(62, 176, 73, 0.18);
+    color: var(--pst-color-primary, #3eb049);
+    font-weight: 600;
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+}
+
+html[data-theme="dark"] #pst-search-dialog .highlighted,
+html[data-theme="dark"] .bd-search-container .highlighted {
+    background-color: rgba(62, 176, 73, 0.28);
+    color: #5cd668;
+}
+
+/* Result item kind badge (for objects, functions, etc.) */
+#pst-search-dialog ul.search li > span,
+.bd-search-container ul.search li > span {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: var(--pst-color-text-muted);
+    background-color: var(--pst-color-background);
+    border: 1px solid var(--pst-color-border);
+    border-radius: 4px;
+    padding: 0.1rem 0.45rem;
+    margin-top: 0.3rem;
+}

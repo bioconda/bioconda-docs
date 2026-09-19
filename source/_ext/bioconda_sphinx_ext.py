@@ -522,7 +522,7 @@ class CondaDomain(Domain):
         """
         for (typ, name), (docname, ref) in self.data['objects'].items():
             dispname = "{} '{}'".format(typ, name)
-            yield name, dispname, typ, docname, ref, 1
+            yield name, dispname, typ, docname, ref, -1
 
     def merge_domaindata(self, docnames: List[str], otherdata: Dict) -> None:
         """Merge in data regarding *docnames* from a different domaindata
@@ -908,12 +908,35 @@ class LintDescriptionDirective(SphinxDirective):
             logger.error("Undocumented lint checks: %s", check)
 
 
+def exclude_recipes_from_search(app, env, docnames):
+    """Mark recipe documentation pages with nosearch so they are excluded from the Sphinx search index."""
+    for docname in docnames:
+        if docname.startswith('recipes/'):
+            env.metadata.setdefault(docname, {})['nosearch'] = True
+
+
+def patch_builder_indexer(app):
+    """Avoid feeding recipe pages to Sphinx search indexer entirely, keeping searchindex.js tiny."""
+    if hasattr(app.builder, 'index_page'):
+        orig_index_page = app.builder.index_page
+
+        def index_page(pagename, doctree, title):
+            metadata = app.env.metadata.get(pagename, {})
+            if 'no-search' in metadata or 'nosearch' in metadata or pagename.startswith('recipes/'):
+                return
+            return orig_index_page(pagename, doctree, title)
+
+        app.builder.index_page = index_page
+
+
 def setup(app):
     """Set up sphinx extension"""
     app.add_domain(CondaDomain)
     app.add_directive('autorecipes', AutoRecipesDirective)
     app.add_directive('lint-check', LintDescriptionDirective)
     app.connect('builder-inited', generate_recipes)
+    app.connect('builder-inited', patch_builder_indexer)
+    app.connect('env-before-read-docs', exclude_recipes_from_search)
     app.connect('env-updated', LintDescriptionDirective.finalize)
     app.connect('missing-reference', resolve_required_by_xrefs)
     app.connect('html-page-context', add_ribbon)
