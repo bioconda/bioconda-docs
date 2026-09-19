@@ -23,7 +23,7 @@
 
       <h1 class="hero-title">A distribution of bioinformatics software</h1>
       <p class="hero-subtitle">
-        Specializing in bioinformatics software for the <strong>Conda</strong> package manager.
+        Providing over 12,000 bioinformatics packages for the <strong>Conda</strong> and <strong>Pixi</strong> package managers.
       </p>
       <div class="hero-cta">
         <a href="conda-package_index.html" class="btn hero-btn-primary">
