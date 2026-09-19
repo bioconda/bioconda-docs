@@ -10,7 +10,6 @@ platforms = ["linux-64"]
 python = ">=3.10"
 sphinx = ">=7.0"
 sphinx-autodoc-typehints = "*"
-celery = "*"
 bioconda-utils = "*"
 pydata-sphinx-theme = "*"
 make = "*"

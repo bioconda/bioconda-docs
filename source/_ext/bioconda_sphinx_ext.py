@@ -97,7 +97,7 @@ def underline_filter(text):
 
 
 def rst_escape_filter(text):
-    """Jinja2 filter escaping RST symbols in text
+    r"""Jinja2 filter escaping RST symbols in text
 
     >>> rst_excape_filter("running `cmd.sh`")
     "running \`cmd.sh\`"
@@ -852,13 +852,17 @@ class LintDescriptionDirective(SphinxDirective):
     add_index = True
 
     def run(self):
+        if not hasattr(self.env, 'bioconda_all_lint_checks'):
+            self.env.bioconda_all_lint_checks = {str(check): check for check in get_checks()}
         if not hasattr(self.env, 'bioconda_lint_checks'):
-            self.env.bioconda_lint_checks = {str(check): check for check in get_checks()}
+            self.env.bioconda_lint_checks = dict(self.env.bioconda_all_lint_checks)
         # gather data
         check_name = self.arguments[0]
-        if check_name not in self.env.bioconda_lint_checks:
-            self.error("Duplicate lint description")
-        check = self.env.bioconda_lint_checks.pop(check_name)
+        check = self.env.bioconda_all_lint_checks.get(check_name)
+        if check is None:
+            logger.error("Unknown lint check: %s", check_name)
+            return []
+        self.env.bioconda_lint_checks.pop(check_name, None)
         _, lineno = inspect.getsourcelines(check)
         lineno += 1
         fname = inspect.getfile(check)

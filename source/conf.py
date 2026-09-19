@@ -16,7 +16,6 @@ sys.path.insert(0, os.path.abspath("./_ext"))
 
 def setup(app):
     app.add_css_file("style.css")
-    app.add_css_file("font-awesome-4.7.0/css/font-awesome.min.css")
 
 
 # -- General configuration ------------------------------------------------
@@ -38,7 +37,6 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "sphinx_autodoc_typehints",  # must be loaded after napoleon
-    "celery.contrib.sphinx",
     "sphinx.ext.graphviz",  # used for tutorial
     "sphinx_copybutton",
 ]
@@ -47,9 +45,7 @@ extensions = [
 templates_path = ["templates"]
 
 # The suffix(es) of source filenames.
-# You can specify multiple suffix as a list of string:
-# source_suffix = ['.rst', '.md']
-source_suffix = ".rst"
+source_suffix = {".rst": "restructuredtext"}
 
 # The master toctree document.
 master_doc = "index"
@@ -139,8 +135,6 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["static"]
-
-html_js_files = ["vega.min.js", "vega-lite.min.js", "vega-embed.min.js"]
 
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
