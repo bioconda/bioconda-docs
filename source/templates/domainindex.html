@@ -118,10 +118,10 @@
 
         <!-- Per Page Limit -->
         <select class="control-select" x-model.number="perPage" aria-label="Packages per page">
-          <option :value="15">15 per page</option>
-          <option :value="25">25 per page</option>
-          <option :value="50">50 per page</option>
-          <option :value="100">100 per page</option>
+          <option value="15">15 per page</option>
+          <option value="25" selected>25 per page</option>
+          <option value="50">50 per page</option>
+          <option value="100">100 per page</option>
         </select>
 
         <!-- Package Manager Switcher (Pixi / Conda) -->
