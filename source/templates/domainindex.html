@@ -118,6 +118,7 @@
 
         <!-- Per Page Limit -->
         <select class="control-select" x-model.number="perPage" aria-label="Packages per page">
+          <option :value="15">15 per page</option>
           <option :value="25">25 per page</option>
           <option :value="50">50 per page</option>
           <option :value="100">100 per page</option>
@@ -142,7 +143,7 @@
     </div>
   </div>
 
-  <!-- Package List (crates.io Divided Row Style) -->
+  <!-- Package List (Clean Spacious Cards) -->
   <div class="package-list" role="feed">
     <template x-for="pkg in paginatedPackages" :key="pkg.name">
       <article class="package-row">
@@ -184,7 +185,12 @@
         <div class="package-row-footer">
           <div class="package-platforms">
             <span class="platforms-label">Platforms:</span>
-            <span class="platforms-list" x-text="pkg.platforms && pkg.platforms.length > 0 ? pkg.platforms.join(', ') : 'no builds'"></span>
+            <div class="platforms-list">
+              <template x-for="plat in (pkg.platforms || [])" :key="plat">
+                <span class="platform-badge" x-text="plat"></span>
+              </template>
+              <span x-show="!pkg.platforms || pkg.platforms.length === 0" class="platforms-none" style="display: none;">no builds</span>
+            </div>
           </div>
 
           <div class="package-links">
