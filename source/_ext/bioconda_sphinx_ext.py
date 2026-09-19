@@ -714,7 +714,9 @@ def generate_recipes(app):
     doctree_dir = app.env.doctreedir  # .../build/doctrees
     repo_dir = op.join(op.dirname(app.env.srcdir), "_bioconda_recipes")
     recipe_basedir = op.join(repo_dir, app.config.bioconda_recipes_path)
-    repodata_cache_file = op.join(doctree_dir, 'RepoDataCache.pkl')
+    cache_dir = op.join(op.dirname(app.env.srcdir), '.bioconda_cache')
+    os.makedirs(cache_dir, exist_ok=True)
+    repodata_cache_file = op.join(cache_dir, 'RepoDataCache.pkl')
     repo_config_file = os.path.join(repo_dir, app.config.bioconda_config_file)
     output_dir = op.join(source_dir, 'recipes')
 
@@ -722,7 +724,10 @@ def generate_recipes(app):
     repo = BiocondaRepo(folder=repo_dir, home=app.config.bioconda_repo_url)
     repo.checkout_master()
     load_config(repo_config_file)
-    logger.info("Preloading RepoData")
+    # RepoData only needs bioconda channel for generating recipe documentation.
+    # Excluding conda-forge avoids downloading/parsing hundreds of megabytes of unused repodata.
+    RepoData.config['channels'] = ['bioconda']
+    logger.info("Preloading RepoData (bioconda channel)")
     repodata = RepoData()
     repodata.set_cache(repodata_cache_file)
     repodata.df  # pylint: disable=pointless-statement
