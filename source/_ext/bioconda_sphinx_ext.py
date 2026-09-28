@@ -503,8 +503,12 @@ class CondaDomain(Domain):
           - -1: object should not show up in search at all
         """
         for (typ, name), (docname, ref) in self.data['objects'].items():
-            dispname = "{} '{}'".format(typ, name)
-            yield name, dispname, typ, docname, ref, 1
+            # Sphinx HTML-escapes dispname when building the search index and
+            # searchtools.js escapes it again when rendering, so quotes (or any
+            # other escapable character) show up as literal entities such as
+            # ``&#x27;``. Use the bare name; the object type is already shown
+            # in the result description ("Conda package, in ...").
+            yield name, name, typ, docname, ref, 1
 
     def merge_domaindata(self, docnames: List[str], otherdata: Dict) -> None:
         """Merge in data regarding *docnames* from a different domaindata
