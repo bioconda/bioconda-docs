@@ -10,7 +10,6 @@ platforms = ["linux-64"]
 python = ">=3.10"
 sphinx = ">=7.0"
 sphinx-autodoc-typehints = "*"
-celery = "*"
 bioconda-utils = "*"
 pydata-sphinx-theme = "*"
 make = "*"
@@ -18,4 +17,4 @@ sphinx-autobuild = "*"
 sphinx-copybutton = "*"
 
 [tasks]
-dev = { cmd = "sphinx-autobuild source build/html", env = { BIOCONDA_FILTER_RECIPES = "10" } }
+dev = { cmd = "bash scripts/dev.sh" }

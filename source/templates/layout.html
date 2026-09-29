@@ -1,11 +1,14 @@
 {% extends "!layout.html" %}
 {%- block extrahead %}
-    <link href="https://fonts.googleapis.com/css?family=Lato|Raleway" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata&family=Lato&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
 
+    {% if pagename == 'index' or pagename.startswith('recipes/') %}
+    <script defer src="{{ pathto('_static/vega.min.js', 1) }}"></script>
+    <script defer src="{{ pathto('_static/vega-lite.min.js', 1) }}"></script>
+    <script defer src="{{ pathto('_static/vega-embed.min.js', 1) }}"></script>
+    {% endif %}
 
     <link rel="apple-touch-icon" sizes="57x57" href="{{pathto('_static/apple-icon-57x57.png', 1)}}">
     <link rel="apple-touch-icon" sizes="60x60" href="{{pathto('_static/apple-icon-60x60.png', 1)}}">
@@ -20,8 +23,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="{{pathto('_static/favicon-32x32.png', 1)}}">
     <link rel="icon" type="image/png" sizes="96x96" href="{{pathto('_static/favicon-96x96.png', 1)}}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{pathto('_static/favicon-16x16.png', 1)}}">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="{{pathto('_static/ms-icon-144x144.png', 1)}}">
 
     <link rel="manifest" href="{{pathto('_static/manifest.json', 1)}}">
     <meta name="theme-color" content="#ffffff">

@@ -1,150 +1,268 @@
-{# Template for domain indices (module index, ...). #}
+{# Template for Bioconda Package Index #}
 {%- extends "layout.html" %}
 {% set title = indextitle %}
 {% block extrahead %}
 {{ super() }}
-{% if not embedded and collapse_index %}
-    <script>
-      DOCUMENTATION_OPTIONS.COLLAPSE_INDEX = true;
-    </script>
-{% endif %}
-  <link rel="stylesheet" href="https://cdn.datatables.net/2.3.8/css/dataTables.bootstrap5.min.css" />
-  <link rel="stylesheet" href="https://cdn.datatables.net/rowgroup/1.6.0/css/rowGroup.bootstrap5.min.css"/>
-    
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/2.3.8/js/dataTables.min.js"></script>
-  <script src="https://cdn.datatables.net/2.3.8/js/dataTables.bootstrap5.min.js"></script>
-  <script src="https://cdn.datatables.net/rowgroup/1.6.0/js/dataTables.rowGroup.min.js"></script>
-  <script src="https://cdn.datatables.net/rowgroup/1.6.0/js/rowGroup.bootstrap5.min.js"></script>
+  <link rel="stylesheet" href="{{ pathto('_static/package-index.css', 1) }}"/>
+  <script defer src="{{ pathto('_static/package-index.js', 1) }}"></script>
+  <script defer src="{{ pathto('_static/vendor/alpine.min.js', 1) }}"></script>
 {% endblock %}
+
 {% block body %}
 
-   {%- set groupid = idgen() %}
+<!-- JSON Dataset embedded safely by Sphinx at build time -->
+<script id="bioconda-packages-data" type="application/json">
+{{ content | tojson }}
+</script>
 
-   <h1>{{ indextitle }}</h1>
-     <div class="table-responsive my-4" style="max-width: 500px;">
-    <table class="table table-striped table-bordered table-hover align-middle">
-     <thead>
-       <tr class="table-dark">
-         <th>Recipes</th>
-         <th>Count</th>
-         <th>Ratio</th>
-       </tr>
-     </thead>
-     <tbody>
-       <tr>
-         <td>Total</td>
-         <td id="total-count" style="text-align: center; font-weight: bold;"></td>
-         <td></td>
-       </tr>
-       <tr>
-         <td>noarch</td>
-         <td id="noarch-count" style="text-align: center;"></td>
-         <td><span id="noarch-ratio"></span>%</td>
-       </tr>
-       <tr>
-         <td>linux-64</td>
-         <td id="linux-64-count" style="text-align: center;"></td>
-         <td><span id="linux-64-ratio"></span>%</td>
-       </tr>
-       <tr>
-         <td>linux-aarch64</td>
-         <td id="linux-aarch64-count" style="text-align: center;"></td>
-         <td><span id="linux-aarch64-ratio"></span>%</td>
-       </tr>
-       <tr>
-         <td>osx-64:</td>
-         <td id="osx-64-count" style="text-align: center;"></td>
-         <td><span id="osx-64-ratio"></span>%</td>
-       </tr>
-       <tr>
-         <td>osx-arm64:</td>
-         <td id="osx-arm64-count" style="text-align: center;"></td>
-         <td><span id="osx-arm64-ratio"></span>%</td>
-       </tr>
-     </tbody>
-    </table>
-   </div>
-   
-   <div class="table-responsive my-5">
-    <table class="table table-striped table-bordered table-hover align-middle indextable modindextable" id="recipes-table" style="width: 100%;"></table>
-   </div>
-   
-   <script>
+<div class="package-index" x-data="biocondaPackageRegistry()" x-cloak>
 
-    let dataset = [
-        {%- for (entry) in content %}
-        ["{{ entry.name }}", "{{ entry.latest_version }}", "{{ entry.platforms }}"]{%- if not loop.last -%}{{ "," }}{%- endif -%} 
-        {%- endfor %}
-    ];
+  <!-- Page Header -->
+  <div class="package-index-header">
+    <div class="header-main">
+      <h1>{{ indextitle }}</h1>
+      <span class="package-count-badge">
+        <strong x-text="stats.total"></strong> packages
+      </span>
+    </div>
+    <p class="header-desc">
+      Index of recipes and packages available in the Bioconda channel.
+    </p>
 
-    let linux64Count = 0;
-    let linuxAarch64Count = 0;
-    let osx64Count = 0;
-    let osxArm64Count = 0;
-    let noarchCount = 0;
-    for (let i=0; i<dataset.length; i++) {
-      let entry = dataset[i];
-      if (entry[2].includes("linux-64")) {
-        linux64Count += 1;
-      }
-      if (entry[2].includes("linux-aarch64")) {
-        linuxAarch64Count += 1;
-      }
-      if (entry[2].includes("osx-64")) {
-        osx64Count += 1;
-      }
-      if (entry[2].includes("osx-arm64")) {
-        osxArm64Count += 1;
-      }
-      if (entry[2].includes("noarch")) {
-        noarchCount += 1;
-      }
-    }
-    let totalCount = dataset.length;
-    document.getElementById("noarch-count").textContent = noarchCount;
-    document.getElementById("noarch-ratio").textContent = (noarchCount / totalCount * 100).toFixed(2);
-    document.getElementById("linux-64-count").textContent = linux64Count;
-    document.getElementById("linux-64-ratio").textContent = (linux64Count / totalCount * 100).toFixed(2);
-    document.getElementById("linux-aarch64-count").textContent = linuxAarch64Count;
-    document.getElementById("linux-aarch64-ratio").textContent = (linuxAarch64Count / totalCount * 100).toFixed(2);
-    document.getElementById("osx-64-count").textContent = osx64Count;
-    document.getElementById("osx-64-ratio").textContent = (osx64Count / totalCount * 100).toFixed(2);
-    document.getElementById("osx-arm64-count").textContent = osxArm64Count;
-    document.getElementById("osx-arm64-ratio").textContent = (osxArm64Count / totalCount * 100).toFixed(2);
-    document.getElementById("total-count").textContent = totalCount;
+    <!-- Platform Filter Tabs -->
+    <div class="platform-filter-bar">
+      <span class="filter-label">Platform:</span>
+      <div class="filter-buttons">
+        <button type="button"
+                class="filter-btn"
+                :class="{ 'active': platform === 'all' }"
+                @click="setPlatform('all')">
+          All <span class="filter-count" x-text="stats.total"></span>
+        </button>
+        <button type="button"
+                class="filter-btn"
+                :class="{ 'active': platform === 'noarch' }"
+                @click="setPlatform('noarch')">
+          noarch <span class="filter-count" x-text="stats.noarch"></span>
+        </button>
+        <button type="button"
+                class="filter-btn"
+                :class="{ 'active': platform === 'linux-64' }"
+                @click="setPlatform('linux-64')">
+          linux-64 <span class="filter-count" x-text="stats.linux64"></span>
+        </button>
+        <button type="button"
+                class="filter-btn"
+                :class="{ 'active': platform === 'linux-aarch64' }"
+                @click="setPlatform('linux-aarch64')">
+          linux-aarch64 <span class="filter-count" x-text="stats.linuxAarch64"></span>
+        </button>
+        <button type="button"
+                class="filter-btn"
+                :class="{ 'active': platform === 'osx-64' }"
+                @click="setPlatform('osx-64')">
+          osx-64 <span class="filter-count" x-text="stats.osx64"></span>
+        </button>
+        <button type="button"
+                class="filter-btn"
+                :class="{ 'active': platform === 'osx-arm64' }"
+                @click="setPlatform('osx-arm64')">
+          osx-arm64 <span class="filter-count" x-text="stats.osxArm64"></span>
+        </button>
+      </div>
+    </div>
+  </div>
 
-    let table = new DataTable('#recipes-table', {
-      data: dataset,
-      columns: [
-        { title: "Name" },
-        {
-            title: "Latest version",
-            orderable: false
-        },
-        {
-            title: "Platforms",
-            orderable: false
-        },
-      ],
-      displayLength: 50,
-      lengthMenu: [
-        [10, 50, 100, -1],
-        [10, 50, 100, 'All']
-      ],
-      columnDefs: [
-        {
-            render: (data, type, row) => {
-              return '<a href="./recipes/' + data + '/README.html#package-'+data+'"><code class="xref">' + data + '</code></a>';
-            },
-            targets: 0
-        },
-      ],
-      rowGroup: {
-        enable: true,
-        dataSrc: (row) => row[0].charAt(0).toLowerCase()
-      }
-    });
-   </script>
+  <!-- Search and Controls Toolbar -->
+  <div class="package-index-toolbar" id="packages-search-toolbar">
+    <div class="search-box">
+      <i class="fa fa-search search-icon"></i>
+      <input type="text"
+             id="bioconda-search-input"
+             class="search-input"
+             x-model="query"
+             placeholder="Search packages by name, description, license, or keyword... (Press '/' to focus)"
+             autocomplete="off"
+             spellcheck="false"
+             @keydown.escape="query = ''">
+      <button type="button"
+              class="search-clear-btn"
+              x-show="query.length > 0"
+              @click="query = ''"
+              title="Clear search"
+              style="display: none;">
+        &times;
+      </button>
+      <kbd class="search-kbd">/</kbd>
+    </div>
+
+    <div class="toolbar-controls">
+      <div class="results-info">
+        <template x-if="totalFiltered > 0">
+          <span>
+            Showing <strong x-text="(page - 1) * perPage + 1"></strong>&ndash;<strong x-text="Math.min(page * perPage, totalFiltered)"></strong> of <strong x-text="totalFiltered"></strong>
+            <span x-show="totalFiltered !== stats.total" class="text-muted" style="display: none;"> (filtered from <span x-text="stats.total"></span>)</span>
+          </span>
+        </template>
+        <template x-if="totalFiltered === 0">
+          <span>No packages found</span>
+        </template>
+      </div>
+
+      <div class="controls-right">
+        <!-- Sort Select -->
+        <select class="control-select" x-model="sortBy" aria-label="Sort packages">
+          <option value="name-asc">Sort by Name (A &rarr; Z)</option>
+          <option value="name-desc">Sort by Name (Z &rarr; A)</option>
+        </select>
+
+        <!-- Per Page Limit -->
+        <select class="control-select" x-model.number="perPage" aria-label="Packages per page">
+          <option value="15">15 per page</option>
+          <option value="25" selected>25 per page</option>
+          <option value="50">50 per page</option>
+          <option value="100">100 per page</option>
+        </select>
+
+        <!-- Package Manager Switcher (Pixi / Conda) -->
+        <div class="pm-switch" role="group" aria-label="Copy command manager">
+          <button type="button"
+                  class="pm-btn"
+                  :class="{ 'active': packageManager === 'pixi' }"
+                  @click="packageManager = 'pixi'">
+            pixi
+          </button>
+          <button type="button"
+                  class="pm-btn"
+                  :class="{ 'active': packageManager === 'conda' }"
+                  @click="packageManager = 'conda'">
+            conda
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Package List (crates.io Divided Row Style) -->
+  <div class="package-list" role="feed">
+    <template x-for="pkg in paginatedPackages" :key="pkg.name">
+      <article class="package-row">
+        <!-- Row Header: Name, Version, License & Copy -->
+        <div class="package-row-header">
+          <div class="package-meta-left">
+            <a :href="'./' + (pkg.docname || ('recipes/' + pkg.name + '/README')) + '.html#package-' + pkg.name"
+               class="package-title"
+               x-text="pkg.name">
+            </a>
+            <span class="package-version" x-text="pkg.latest_version ? 'v' + pkg.latest_version : ''"></span>
+            <span class="package-license" x-show="pkg.license" x-text="pkg.license" style="display: none;"></span>
+          </div>
+
+          <button type="button"
+                  class="copy-cmd-btn"
+                  :class="{ 'copied': copiedPackage === pkg.name }"
+                  @click="copyInstall(pkg)"
+                  :title="'Copy: ' + getInstallCommand(pkg.name)">
+            <template x-if="copiedPackage !== pkg.name">
+              <span>
+                <i class="fa fa-clipboard"></i>
+                <span x-text="getInstallCommand(pkg.name)"></span>
+              </span>
+            </template>
+            <template x-if="copiedPackage === pkg.name">
+              <span>
+                <i class="fa fa-check text-success"></i>
+                <span>Copied!</span>
+              </span>
+            </template>
+          </button>
+        </div>
+
+        <!-- Row Description -->
+        <p class="package-desc" x-text="pkg.summary || 'Bioconda package recipe for ' + pkg.name"></p>
+
+        <!-- Row Footer: Platforms & Links -->
+        <div class="package-row-footer">
+          <div class="package-platforms">
+            <span class="platforms-label">Platforms:</span>
+            <span class="platforms-list" x-text="pkg.platforms && pkg.platforms.length > 0 ? pkg.platforms.join(', ') : 'no builds'"></span>
+          </div>
+
+          <div class="package-links">
+            <a x-show="pkg.home"
+               :href="pkg.home"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="pkg-link"
+               style="display: none;">
+              Homepage
+            </a>
+            <span x-show="pkg.home" class="link-sep" style="display: none;">&bull;</span>
+            <a :href="'https://github.com/bioconda/bioconda-recipes/tree/master/recipes/' + pkg.name"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="pkg-link">
+              Recipe
+            </a>
+            <span x-show="pkg.doc_url" class="link-sep" style="display: none;">&bull;</span>
+            <a x-show="pkg.doc_url"
+               :href="pkg.doc_url"
+               target="_blank"
+               rel="noopener noreferrer"
+               class="pkg-link"
+               style="display: none;">
+              Docs
+            </a>
+          </div>
+        </div>
+      </article>
+    </template>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" x-show="totalFiltered === 0" style="display: none;">
+    <p class="empty-title">No packages matching your query</p>
+    <p class="empty-subtitle">Try another keyword or reset the platform filter.</p>
+    <button type="button" class="btn btn-outline-secondary btn-sm" @click="clearFilters()">
+      Reset filters
+    </button>
+  </div>
+
+  <!-- Pagination Controls -->
+  <nav class="pagination-bar" x-show="totalPages > 1" aria-label="Package pagination" style="display: none;">
+    <button type="button"
+            class="page-btn"
+            :disabled="page <= 1"
+            @click="setPage(page - 1)"
+            aria-label="Previous page">
+      &lsaquo; Prev
+    </button>
+
+    <template x-for="p in paginationRange" :key="p">
+      <div>
+        <template x-if="p === '...'">
+          <span class="page-ellipsis">&hellip;</span>
+        </template>
+        <template x-if="p !== '...'">
+          <button type="button"
+                  class="page-btn"
+                  :class="{ 'active': page === p }"
+                  @click="setPage(p)"
+                  x-text="p">
+          </button>
+        </template>
+      </div>
+    </template>
+
+    <button type="button"
+            class="page-btn"
+            :disabled="page >= totalPages"
+            @click="setPage(page + 1)"
+            aria-label="Next page">
+      Next &rsaquo;
+    </button>
+  </nav>
+
+</div>
 
 {% endblock %}

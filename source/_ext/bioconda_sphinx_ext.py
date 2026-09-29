@@ -97,7 +97,7 @@ def underline_filter(text):
 
 
 def rst_escape_filter(text):
-    """Jinja2 filter escaping RST symbols in text
+    r"""Jinja2 filter escaping RST symbols in text
 
     >>> rst_excape_filter("running `cmd.sh`")
     "running \`cmd.sh\`"
@@ -397,20 +397,38 @@ class PackageIndex(Index):
         """build index"""
         content = []
 
+        details = self.domain.data.setdefault('details', {})
+        if recipes_details:
+            details.update(recipes_details)
+
         objects = sorted(self.domain.data['objects'].items())
         for (typ, name), (docname, labelid) in objects:
-            if docnames and docname not in docnames:
-                continue
+            recipe_details = details.get(name) or recipes_details.get(name, {})
+            platforms = recipe_details.get('platforms', [])
+            if isinstance(platforms, str):
+                platforms = [p.strip() for p in platforms.split(',') if p.strip()]
 
-            recipe_details = recipes_details.get(name, {})
-            
-            # TODO: Add meaningful info for extra/qualifier/description
-            #       fields, e.g., latest package version.
             content.append({
                 "name": name,
-                "platforms": ', '.join(recipe_details.get('platforms', [])),
-                "latest_version": recipe_details.get('latest_version')
+                "docname": docname,
+                "platforms": platforms,
+                "latest_version": recipe_details.get('latest_version') or '',
+                "summary": recipe_details.get('summary', ''),
+                "home": recipe_details.get('home', ''),
+                "license": recipe_details.get('license', ''),
+                "doc_url": recipe_details.get('doc_url', ''),
+                "dev_url": recipe_details.get('dev_url', ''),
             })
+
+        # Also write static JSON file if builder outdir is available
+        try:
+            import json
+            outdir = self.domain.env.app.builder.outdir
+            json_path = op.join(outdir, 'packages-index.json')
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump(content, f)
+        except Exception as e:
+            logger.debug("Could not write packages-index.json: %s", e)
 
         collapse = True
         return content, collapse
@@ -503,12 +521,18 @@ class CondaDomain(Domain):
           - -1: object should not show up in search at all
         """
         for (typ, name), (docname, ref) in self.data['objects'].items():
-            # Sphinx HTML-escapes dispname when building the search index and
-            # searchtools.js escapes it again when rendering, so quotes (or any
-            # other escapable character) show up as literal entities such as
-            # ``&#x27;``. Use the bare name; the object type is already shown
-            # in the result description ("Conda package, in ...").
-            yield name, name, typ, docname, ref, 1
+            # Use the bare name as the display name: Sphinx HTML-escapes
+            # dispname when building searchindex.js and searchtools.js escapes
+            # it again when rendering, so quotes (or any other escapable
+            # character) show up as literal entities such as ``&#x27;``. The
+            # object type is already shown in the result description
+            # ("Conda package, in ...").
+            #
+            # Priority -1 keeps these objects out of search entirely, which
+            # matches the ``:nosearch:`` flag on the generated package readme
+            # pages (see ``exclude_recipes_from_search`` and
+            # ``patch_builder_indexer``).
+            yield name, name, typ, docname, ref, -1
 
     def merge_domaindata(self, docnames: List[str], otherdata: Dict) -> None:
         """Merge in data regarding *docnames* from a different domaindata
@@ -625,7 +649,7 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
                         else:
                             return platform
                     platforms = map(mapper, platforms)
-                recipe_details['platforms'] = list(platforms)
+                recipe_details['platforms'] = sorted(list(platforms))
 
                 recipe_details['latest_version'] = latest_version
                 # recipe_details['build_number'] = sorted_versions[0][1]
@@ -639,9 +663,30 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
         })
 
     recipe_extra = recipe.get('extra', None)
+    about = recipe.get('about', None) or {}
+
+    summary = about.get('summary') or ''
+    if summary:
+        summary = ' '.join(str(summary).split())
+    else:
+        summary = ''
+
+    home = about.get('home') or ''
+    license_val = about.get('license') or about.get('license_family') or ''
+    if license_val:
+        license_val = str(license_val).strip()
+    else:
+        license_val = ''
+
+    recipe_details['summary'] = summary
+    recipe_details['home'] = home
+    recipe_details['license'] = license_val
+    recipe_details['doc_url'] = about.get('doc_url') or ''
+    recipe_details['dev_url'] = about.get('dev_url') or ''
+
     template_options = {
         'name': recipe.name,
-        'about': recipe.get('about', None),
+        'about': about,
         'extra': recipe_extra,
         'recipe': recipe,
         'packages': packages,
@@ -653,6 +698,15 @@ def generate_readme(recipe_basedir, output_dir, folder, repodata, renderer):
         recipe_details['additional-platforms'] = recipe_extra.get('additional-platforms', [])
 
     recipes_details[recipe.name] = recipe_details
+    for package in outputs:
+        if package != recipe.name:
+            out_details = recipes_details.get(package, {}).copy()
+            out_details.setdefault('summary', summary)
+            out_details.setdefault('home', home)
+            out_details.setdefault('license', license_val)
+            out_details.setdefault('platforms', recipe_details.get('platforms', []))
+            out_details.setdefault('latest_version', recipe_details.get('latest_version', ''))
+            recipes_details[package] = out_details
 
     renderer.render_to_file(output_file, 'readme.rst_t', template_options)
     return [output_file]
@@ -671,7 +725,9 @@ def generate_recipes(app):
     doctree_dir = app.env.doctreedir  # .../build/doctrees
     repo_dir = op.join(op.dirname(app.env.srcdir), "_bioconda_recipes")
     recipe_basedir = op.join(repo_dir, app.config.bioconda_recipes_path)
-    repodata_cache_file = op.join(doctree_dir, 'RepoDataCache.pkl')
+    cache_dir = op.join(op.dirname(app.env.srcdir), '.bioconda_cache')
+    os.makedirs(cache_dir, exist_ok=True)
+    repodata_cache_file = op.join(cache_dir, 'RepoDataCache.pkl')
     repo_config_file = os.path.join(repo_dir, app.config.bioconda_config_file)
     output_dir = op.join(source_dir, 'recipes')
 
@@ -679,7 +735,10 @@ def generate_recipes(app):
     repo = BiocondaRepo(folder=repo_dir, home=app.config.bioconda_repo_url)
     repo.checkout_master()
     load_config(repo_config_file)
-    logger.info("Preloading RepoData")
+    # RepoData only needs bioconda channel for generating recipe documentation.
+    # Excluding conda-forge avoids downloading/parsing hundreds of megabytes of unused repodata.
+    RepoData.config['channels'] = ['bioconda']
+    logger.info("Preloading RepoData (bioconda channel)")
     repodata = RepoData()
     repodata.set_cache(repodata_cache_file)
     repodata.df  # pylint: disable=pointless-statement
@@ -732,10 +791,12 @@ def generate_recipes(app):
                                  folder)
                     continue
                 _recipes.extend(generate_readme(recipe_basedir, output_dir, folder, repodata, renderer))
-            return _recipes
+            return _recipes, recipes_details
 
         def merge_chunk(_chunk, res):
-            recipes.extend(res)
+            chunk_recipes, chunk_details = res
+            recipes.extend(chunk_recipes)
+            recipes_details.update(chunk_details)
 
         for chunk in status_iterator(
                 chunks,
@@ -807,13 +868,17 @@ class LintDescriptionDirective(SphinxDirective):
     add_index = True
 
     def run(self):
+        if not hasattr(self.env, 'bioconda_all_lint_checks'):
+            self.env.bioconda_all_lint_checks = {str(check): check for check in get_checks()}
         if not hasattr(self.env, 'bioconda_lint_checks'):
-            self.env.bioconda_lint_checks = {str(check): check for check in get_checks()}
+            self.env.bioconda_lint_checks = dict(self.env.bioconda_all_lint_checks)
         # gather data
         check_name = self.arguments[0]
-        if check_name not in self.env.bioconda_lint_checks:
-            self.error("Duplicate lint description")
-        check = self.env.bioconda_lint_checks.pop(check_name)
+        check = self.env.bioconda_all_lint_checks.get(check_name)
+        if check is None:
+            logger.error("Unknown lint check: %s", check_name)
+            return []
+        self.env.bioconda_lint_checks.pop(check_name, None)
         _, lineno = inspect.getsourcelines(check)
         lineno += 1
         fname = inspect.getfile(check)
@@ -853,12 +918,35 @@ class LintDescriptionDirective(SphinxDirective):
             logger.error("Undocumented lint checks: %s", check)
 
 
+def exclude_recipes_from_search(app, env, docnames):
+    """Mark recipe documentation pages with nosearch so they are excluded from the Sphinx search index."""
+    for docname in docnames:
+        if docname.startswith('recipes/'):
+            env.metadata.setdefault(docname, {})['nosearch'] = True
+
+
+def patch_builder_indexer(app):
+    """Avoid feeding recipe pages to Sphinx search indexer entirely, keeping searchindex.js tiny."""
+    if hasattr(app.builder, 'index_page'):
+        orig_index_page = app.builder.index_page
+
+        def index_page(pagename, doctree, title):
+            metadata = app.env.metadata.get(pagename, {})
+            if 'no-search' in metadata or 'nosearch' in metadata or pagename.startswith('recipes/'):
+                return
+            return orig_index_page(pagename, doctree, title)
+
+        app.builder.index_page = index_page
+
+
 def setup(app):
     """Set up sphinx extension"""
     app.add_domain(CondaDomain)
     app.add_directive('autorecipes', AutoRecipesDirective)
     app.add_directive('lint-check', LintDescriptionDirective)
     app.connect('builder-inited', generate_recipes)
+    app.connect('builder-inited', patch_builder_indexer)
+    app.connect('env-before-read-docs', exclude_recipes_from_search)
     app.connect('env-updated', LintDescriptionDirective.finalize)
     app.connect('missing-reference', resolve_required_by_xrefs)
     app.connect('html-page-context', add_ribbon)
