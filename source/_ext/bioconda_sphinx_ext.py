@@ -521,8 +521,18 @@ class CondaDomain(Domain):
           - -1: object should not show up in search at all
         """
         for (typ, name), (docname, ref) in self.data['objects'].items():
-            dispname = "{} '{}'".format(typ, name)
-            yield name, dispname, typ, docname, ref, -1
+            # Use the bare name as the display name: Sphinx HTML-escapes
+            # dispname when building searchindex.js and searchtools.js escapes
+            # it again when rendering, so quotes (or any other escapable
+            # character) show up as literal entities such as ``&#x27;``. The
+            # object type is already shown in the result description
+            # ("Conda package, in ...").
+            #
+            # Priority -1 keeps these objects out of search entirely, which
+            # matches the ``:nosearch:`` flag on the generated package readme
+            # pages (see ``exclude_recipes_from_search`` and
+            # ``patch_builder_indexer``).
+            yield name, name, typ, docname, ref, -1
 
     def merge_domaindata(self, docnames: List[str], otherdata: Dict) -> None:
         """Merge in data regarding *docnames* from a different domaindata
