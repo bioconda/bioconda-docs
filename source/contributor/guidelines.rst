@@ -12,17 +12,18 @@ bioconda recipe checklist
 - Remove unnecessary comments (:ref:`details <comments-in-meta>`)
 - Adequate tests included (:ref:`details <tests>`)
 - Files created by the recipe follow the FSH (:ref:`details <fsh-section>`)
-- License allows redistribution and license is indicated in ``meta.yaml``
+- License allows redistribution and license is indicated in ``meta.yaml`` with
+  an `SPDX license identifier <https://spdx.org/licenses/>`_
 - Package does not already exist in the ``defaults`` or ``conda-forge``
   channels with some exceptions (:ref:`details <channel-exceptions>`)
 - Package is appropriate for bioconda (:ref:`details <appropriate-for-bioconda>`)
 - If the recipe installs custom wrapper scripts, usage notes should be added to
   ``extra -> notes`` in the ``meta.yaml``.
-- **Update 21 Jan 2019**:  Recipes that contain pure Python packages should be marked as a `"noarch"
+- Recipes that contain pure Python packages should be marked as a `"noarch"
   <https://www.continuum.io/blog/developer-blog/condas-new-noarch-packages>`_
   (:ref:`details <noarch>`).
-- **Update 7 Mar 2018**: When patching a recipe, please provide details on how
-  you tried to address the problem upstream (:ref:`details <patching>`)
+- When patching a recipe, please provide details on how you tried to address
+  the problem upstream (:ref:`details <patching>`)
 
 .. _stable-url:
 
@@ -431,25 +432,37 @@ Build tools (e.g., ``autoconf``) and compilers (e.g., ``gcc``) should be
 specified in the build requirements. Compilers are handled via a special macro.
 E.g., ``{{ compiler('c')}}`` ensures that the correct version of ``gcc`` is used.
 For the C++ variant ``g++``, you need to use ``{{ compiler('cxx') }}``.
-These rules apply for both Linux and macOS.
+These rules apply for both Linux and macOS. The ``{{ stdlib('c') }}`` macro
+should also be specified alongside the C/C++ compiler; older recipes may lack
+the ``stdlib`` selector, which should be added if the recipes are updated or
+rebuilt.
 
-Conda distinguishes between dependencies needed for building (the ``build`` section),
-and dependencies needed during build time (the ``host`` section).
+Conda distinguishes between dependencies needed for building (the ``build``
+section), and dependencies needed during build time (the ``host`` section) like
+shared libraries (see `Conda documentation
+<https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html#requirements-section>`_).
+
 For example, the following
-
 
 .. code:: yaml
 
     requirements:
       build:
         - {{ compiler('c') }}
+        - {{ stdlib('c') }}
+        - make
       host:
         - zlib
       run:
-        - zlib
+        - ...
 
-specifies that a recipe needs the C compiler to build, and zlib present during
-building and running.
+specifies that a recipe needs the C compiler, standard library and ``make`` to
+build, and the ``zlib`` library is required during compilation. However
+``zlib`` is not listed under ``run`` because ``zlib``'s own recipe ``zlib``
+has defined the library ``libzlib`` as a run export, so when a Conda recipe
+specifies ``zlib`` as a host requirement, the ``libzlib`` library will be
+automatically exported as a run requirement (see
+`conda-build documentation <https://docs.conda.io/projects/conda-build/en/stable/resources/define-metadata.html#export-runtime-requirements>`_).
 
 For two examples see:
 
