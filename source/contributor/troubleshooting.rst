@@ -198,6 +198,42 @@ To use the extended container, add the following to a recipe's ``meta.yaml``:
         extended-base: True
 
 
+Building a CUDA-enabled container
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Packages whose dependencies ship CUDA-enabled builds (for example, PyTorch
+on conda-forge) can opt in to a GPU-capable biocontainer. When a recipe sets
+``cuda``, the environment solve inside the mulled build pretends a CUDA
+driver is present (via ``CONDA_OVERRIDE_CUDA``), so the solver selects
+cuda-enabled package builds instead of the default CPU-only variants:
+
+.. code:: yaml
+
+    extra:
+      container:
+        cuda: true
+
+``cuda: true`` lets the solver pick the best available CUDA build. To pin
+the reported driver version instead — the solver then only accepts cuda
+builds compatible with that driver — set an explicit version:
+
+.. code:: yaml
+
+    extra:
+      container:
+        cuda: "12.4"
+
+Two caveats:
+
+- The resulting image is considerably larger (CUDA-enabled builds of
+  libraries such as PyTorch add several gigabytes), so this opt-in should
+  only be used for packages that genuinely benefit from GPU execution.
+- The image still works on hosts without a GPU: CUDA-linked packages fall
+  back to CPU execution when no device is present. Whether a running
+  container can actually see a GPU depends on the container runtime
+  (e.g. ``docker run --gpus all``), not on the image itself.
+
+
 ``g++`` or ``gcc`` not found
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
